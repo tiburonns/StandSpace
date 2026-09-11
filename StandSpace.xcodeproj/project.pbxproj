@@ -1,0 +1,306 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10000000000000000000001 /* StandSpaceApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000001 /* StandSpaceApp.swift */; };
+		A10000000000000000000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000002 /* ContentView.swift */; };
+		A10000000000000000000003 /* DashboardModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000003 /* DashboardModels.swift */; };
+		A10000000000000000000004 /* DashboardStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000004 /* DashboardStore.swift */; };
+		A10000000000000000000005 /* DashboardGridLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000005 /* DashboardGridLayout.swift */; };
+		A10000000000000000000006 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000006 /* DashboardView.swift */; };
+		A10000000000000000000007 /* ModuleCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000007 /* ModuleCardView.swift */; };
+		A10000000000000000000008 /* EditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000008 /* EditorView.swift */; };
+		A10000000000000000000009 /* ClockModuleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000009 /* ClockModuleView.swift */; };
+		A1000000000000000000000A /* DateModuleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000A /* DateModuleView.swift */; };
+		A1000000000000000000000B /* BatteryModuleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000B /* BatteryModuleView.swift */; };
+		A1000000000000000000000C /* TextModuleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000C /* TextModuleView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A20000000000000000000001 /* StandSpaceApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandSpaceApp.swift; sourceTree = "<group>"; };
+		A20000000000000000000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		A20000000000000000000003 /* DashboardModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardModels.swift; sourceTree = "<group>"; };
+		A20000000000000000000004 /* DashboardStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardStore.swift; sourceTree = "<group>"; };
+		A20000000000000000000005 /* DashboardGridLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardGridLayout.swift; sourceTree = "<group>"; };
+		A20000000000000000000006 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		A20000000000000000000007 /* ModuleCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModuleCardView.swift; sourceTree = "<group>"; };
+		A20000000000000000000008 /* EditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorView.swift; sourceTree = "<group>"; };
+		A20000000000000000000009 /* ClockModuleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClockModuleView.swift; sourceTree = "<group>"; };
+		A2000000000000000000000A /* DateModuleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateModuleView.swift; sourceTree = "<group>"; };
+		A2000000000000000000000B /* BatteryModuleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryModuleView.swift; sourceTree = "<group>"; };
+		A2000000000000000000000C /* TextModuleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextModuleView.swift; sourceTree = "<group>"; };
+		A2000000000000000000000D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A2000000000000000000000E /* StandSpace.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StandSpace.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A30000000000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A40000000000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				A40000000000000000000002 /* StandSpace */,
+				A40000000000000000000007 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A40000000000000000000002 /* StandSpace */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000001 /* StandSpaceApp.swift */,
+				A20000000000000000000002 /* ContentView.swift */,
+				A40000000000000000000003 /* Models */,
+				A40000000000000000000004 /* Views */,
+				A40000000000000000000005 /* Modules */,
+				A40000000000000000000006 /* Shared */,
+				A2000000000000000000000D /* Info.plist */,
+			);
+			path = StandSpace;
+			sourceTree = "<group>";
+		};
+		A40000000000000000000003 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000003 /* DashboardModels.swift */,
+				A20000000000000000000004 /* DashboardStore.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		A40000000000000000000004 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000006 /* DashboardView.swift */,
+				A20000000000000000000007 /* ModuleCardView.swift */,
+				A20000000000000000000008 /* EditorView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		A40000000000000000000005 /* Modules */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000009 /* ClockModuleView.swift */,
+				A2000000000000000000000A /* DateModuleView.swift */,
+				A2000000000000000000000B /* BatteryModuleView.swift */,
+				A2000000000000000000000C /* TextModuleView.swift */,
+			);
+			path = Modules;
+			sourceTree = "<group>";
+		};
+		A40000000000000000000006 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000005 /* DashboardGridLayout.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		A40000000000000000000007 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A2000000000000000000000E /* StandSpace.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A50000000000000000000001 /* StandSpace */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A80000000000000000000002 /* Build configuration list for PBXNativeTarget "StandSpace" */;
+			buildPhases = (
+				A30000000000000000000002 /* Sources */,
+				A30000000000000000000001 /* Frameworks */,
+				A30000000000000000000003 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = StandSpace;
+			productName = StandSpace;
+			productReference = A2000000000000000000000E /* StandSpace.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A60000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					A50000000000000000000001 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+				};
+			};
+			buildConfigurationList = A80000000000000000000001 /* Build configuration list for PBXProject "StandSpace" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A40000000000000000000001;
+			productRefGroup = A40000000000000000000007 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A50000000000000000000001 /* StandSpace */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A30000000000000000000003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A30000000000000000000002 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000000000000000000001 /* StandSpaceApp.swift in Sources */,
+				A10000000000000000000002 /* ContentView.swift in Sources */,
+				A10000000000000000000003 /* DashboardModels.swift in Sources */,
+				A10000000000000000000004 /* DashboardStore.swift in Sources */,
+				A10000000000000000000005 /* DashboardGridLayout.swift in Sources */,
+				A10000000000000000000006 /* DashboardView.swift in Sources */,
+				A10000000000000000000007 /* ModuleCardView.swift in Sources */,
+				A10000000000000000000008 /* EditorView.swift in Sources */,
+				A10000000000000000000009 /* ClockModuleView.swift in Sources */,
+				A1000000000000000000000A /* DateModuleView.swift in Sources */,
+				A1000000000000000000000B /* BatteryModuleView.swift in Sources */,
+				A1000000000000000000000C /* TextModuleView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A70000000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		A70000000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		A70000000000000000000003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				INFOPLIST_FILE = StandSpace/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tiburonns.StandSpace;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A70000000000000000000004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				INFOPLIST_FILE = StandSpace/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tiburonns.StandSpace;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A80000000000000000000001 /* Build configuration list for PBXProject "StandSpace" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A70000000000000000000001 /* Debug */,
+				A70000000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A80000000000000000000002 /* Build configuration list for PBXNativeTarget "StandSpace" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A70000000000000000000003 /* Debug */,
+				A70000000000000000000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A60000000000000000000001 /* Project object */;
+}
