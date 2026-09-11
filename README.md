@@ -1,71 +1,116 @@
 # StandSpace
 
-**StandSpace** is a customizable modular standby dashboard for iPhone and iPad, inspired by the glanceable experience of Apple StandBy while giving users much more control over layout, module size, and visual style.
+**Your space. Your information.**
 
-> Status: early prototype / Xcode starter.
+StandSpace is a free, customizable modular dashboard for iPhone and iPad. It takes the glanceable idea behind a standby display and turns it into a flexible canvas: users decide what is visible, how large it is, how it looks, and how the space is arranged.
 
-## Current prototype
+> Current milestone: **0.2 — Canvas foundations**
 
-- SwiftUI dashboard optimized for landscape use.
-- Modular cards with multiple sizes: `1×1`, `2×1`, `1×2`, and `2×2`.
-- Module styles: glass, minimal, solid, outline, and gradient.
-- Background presets: black, midnight, and night red.
+## Product principles
+
+- **Free by design.** No paywalls, no “Pro” module tier, and no intentionally crippled core experience.
+- **Useful before flashy.** Every module should earn its space on the screen.
+- **Direct manipulation.** Editing should feel physical: long-press, move, resize, duplicate, remove.
+- **Private by default.** Prefer on-device data and private Apple platform storage when sync is introduced.
+- **Native first.** SwiftUI, WidgetKit, App Intents, ActivityKit, and Apple platform conventions before custom hacks.
+- **Accessible and adaptable.** iPhone and iPad layouts should adapt rather than merely scale.
+
+## What works now
+
+- Landscape-friendly SwiftUI dashboard.
+- Long-press or toolbar entry into direct edit mode.
+- Drag modules to reorder them on a snapping grid.
+- Resize modules from the lower-right handle.
+- Duplicate, delete, or open a module inspector directly on the canvas.
+- Visual module gallery with search, categories, preview, size, and style selection.
+- Eight grid spans from 1×1 through 4×2, filtered per module.
+- Adaptive 4-, 6-, and 8-column canvas behavior based on available width.
 - Clock, date, device battery, and custom text modules.
-- Module editor for adding, deleting, resizing, styling, and reordering modules.
-- Local persistence for dashboard configuration.
-- Optional keep-screen-awake behavior while the dashboard is visible.
-- iPhone and iPad support.
+- Glass, minimal, solid, outline, gradient, and tinted module styles.
+- Black, Midnight, Night Red, OLED, Aurora, and Warm backgrounds.
+- Local persistence and optional keep-screen-awake behavior.
+- Compatibility path for dashboards saved by the 0.1 prototype.
 
-## Roadmap
+## Next milestones
 
-The next milestone is a direct-manipulation editor similar to the iOS Home Screen: long-press to enter edit mode, drag modules on the canvas, resize them from handles, and add modules from a visual gallery.
+### 0.3 — Module engine + first useful pack
 
-Future modules may include weather, calendar, reminders, media controls, photos, timers, Shortcuts actions, Home data, connectivity, maps/ETA, activity, and world clocks.
+- Formal module/provider protocol so modules can be added without growing a giant switch statement.
+- Weather.
+- Calendar / next event.
+- Reminders.
+- Media / Now Playing where platform APIs allow it.
+- Photos.
+- Timer / Pomodoro.
+
+### 0.4 — Spaces and themes
+
+- Multiple saved Spaces such as Desk, Night, Kitchen, Work, and Car.
+- Full theme engine: typography, spacing, corner radius, accent, module material, and background.
+- OLED protection options such as subtle pixel shifting and low-light presets.
+
+### 0.5 — Apple ecosystem integration
+
+- App Intents and Shortcuts actions.
+- WidgetKit / Apple StandBy-compatible widgets where supported.
+- Live Activities for temporary ongoing modules.
+- iCloud sync for Spaces and preferences.
+- Import/export of shareable StandSpace layouts.
+
+See CHANGELOG.md for the current release notes.
 
 ## Requirements
 
 - Xcode with an iOS 17+ SDK
 - iOS / iPadOS 17.0+
-- An Apple Developer team for installing on a physical device
+- An Apple Developer team for installation on a physical device
 
 ## Run
 
 1. Clone this repository.
-2. Open `StandSpace.xcodeproj`.
-3. Select the `StandSpace` target.
+2. Open StandSpace.xcodeproj.
+3. Select the StandSpace target.
 4. Open **Signing & Capabilities** and select your development team.
-5. Verify the bundle identifier is `com.tiburonns.StandSpace`, or change it if needed for your signing account.
+5. Verify the bundle identifier com.tiburonns.StandSpace or change it for your signing account.
 6. Build and run on an iPhone or iPad.
 
 ---
 
 # StandSpace — Español
 
-**StandSpace** es un dashboard modular y personalizable para iPhone y iPad, inspirado en la experiencia de consulta rápida de Apple StandBy, pero con mucho más control sobre la distribución, el tamaño de los módulos y su diseño visual.
+**Tu espacio. Tu información.**
 
-> Estado: prototipo inicial / proyecto base para Xcode.
+StandSpace es un dashboard modular gratuito y personalizable para iPhone y iPad. Toma la idea de una pantalla de consulta rápida y la convierte en un lienzo flexible: el usuario decide qué se muestra, cuánto espacio ocupa, cómo se ve y cómo se organiza.
 
-## Prototipo actual
+> Hito actual: **0.2 — Bases del Canvas**
 
-- Dashboard SwiftUI optimizado para uso horizontal.
-- Módulos con tamaños `1×1`, `2×1`, `1×2` y `2×2`.
-- Estilos: cristal, minimalista, sólido, contorno y gradiente.
-- Fondos: negro, medianoche y rojo nocturno.
-- Módulos de reloj, fecha, batería del dispositivo y texto personalizado.
-- Editor para agregar, eliminar, cambiar tamaño, estilo y orden de los módulos.
-- Configuración persistente de forma local.
-- Opción para mantener la pantalla encendida mientras se muestra el dashboard.
-- Compatibilidad con iPhone y iPad.
+## Principios del producto
 
-## Próximo objetivo
+- **Gratis por diseño.** Sin paywalls, sin módulos esenciales “Pro” y sin limitar funciones para venderlas después.
+- **Útil antes que llamativo.** Cada módulo debe justificar el espacio que ocupa.
+- **Manipulación directa.** Mantener pulsado, mover, redimensionar, duplicar y eliminar.
+- **Privacidad por defecto.** Priorizaremos datos en el dispositivo y almacenamiento privado del ecosistema Apple cuando llegue la sincronización.
+- **Nativo primero.** SwiftUI y las APIs oficiales de Apple antes de soluciones frágiles.
+- **Adaptable.** iPhone y iPad tendrán distribuciones pensadas para cada tamaño, no sólo una interfaz estirada.
 
-El siguiente paso es crear un editor de manipulación directa similar a la pantalla de inicio de iOS: mantener pulsado para editar, arrastrar módulos sobre el lienzo, redimensionarlos mediante controles y agregar nuevos módulos desde una galería visual.
+## Ya funciona
 
-## Ejecutar
+- Dashboard SwiftUI pensado para horizontal.
+- Modo de edición mediante pulsación larga o el botón Editar.
+- Arrastrar para reordenar sobre una cuadrícula con snapping.
+- Redimensionar desde la esquina inferior derecha.
+- Duplicar, eliminar y abrir el inspector directamente sobre un módulo.
+- Galería visual con búsqueda, categorías, vista previa, tamaño y estilo.
+- Ocho tamaños de cuadrícula desde 1×1 hasta 4×2, según lo que admita cada módulo.
+- Canvas adaptativo de 4, 6 u 8 columnas según el ancho disponible.
+- Reloj, fecha, batería del dispositivo y texto personalizado.
+- Estilos cristal, minimalista, sólido, contorno, gradiente y tinte.
+- Fondos Negro, Medianoche, Rojo nocturno, OLED, Aurora y Cálido.
+- Persistencia local y opción de mantener la pantalla encendida.
+- Compatibilidad con configuraciones guardadas por el prototipo 0.1.
 
-1. Clona este repositorio.
-2. Abre `StandSpace.xcodeproj`.
-3. Selecciona el target `StandSpace`.
-4. Entra en **Signing & Capabilities** y selecciona tu equipo de desarrollo.
-5. Verifica el identificador `com.tiburonns.StandSpace`.
-6. Compila y ejecuta en un iPhone o iPad.
+## Lo siguiente
+
+La versión 0.3 formalizará el **Module Engine** y comenzará el primer paquete de módulos realmente útiles: clima, calendario, recordatorios, multimedia, fotos y temporizadores. Después construiremos Spaces/perfiles, temas avanzados, App Intents, widgets, Live Activities, iCloud e importación/exportación.
+
+Consulta CHANGELOG.md para ver los cambios de cada versión.

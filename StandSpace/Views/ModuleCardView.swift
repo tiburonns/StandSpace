@@ -7,7 +7,7 @@ struct ModuleCardView: View {
         moduleContent
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(padding)
-            .foregroundStyle(foregroundStyle)
+            .foregroundStyle(Color.white)
             .background(cardBackground)
             .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
             .overlay(cardBorder)
@@ -32,10 +32,6 @@ struct ModuleCardView: View {
         item.size == .small ? 16 : 22
     }
 
-    private var foregroundStyle: Color {
-        .white
-    }
-
     @ViewBuilder
     private var cardBackground: some View {
         switch item.style {
@@ -53,14 +49,23 @@ struct ModuleCardView: View {
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
+        case .tinted:
+            LinearGradient(
+                colors: [Color.accentColor.opacity(0.30), Color.accentColor.opacity(0.08)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
         }
     }
 
     @ViewBuilder
     private var cardBorder: some View {
-        if item.style == .outline || item.style == .glass {
+        if item.style == .outline || item.style == .glass || item.style == .tinted {
             RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .stroke(Color.white.opacity(item.style == .outline ? 0.35 : 0.12), lineWidth: 1)
+                .stroke(
+                    item.style == .tinted ? Color.accentColor.opacity(0.35) : Color.white.opacity(item.style == .outline ? 0.35 : 0.12),
+                    lineWidth: 1
+                )
         }
     }
 }
