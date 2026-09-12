@@ -19,6 +19,7 @@
 		A1000000000000000000000A /* DateModuleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000A /* DateModuleView.swift */; };
 		A1000000000000000000000B /* BatteryModuleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000B /* BatteryModuleView.swift */; };
 		A1000000000000000000000C /* TextModuleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000C /* TextModuleView.swift */; };
+		A1000000000000000000000D /* AdditionalModules.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000F /* AdditionalModules.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +37,7 @@
 		A2000000000000000000000C /* TextModuleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextModuleView.swift; sourceTree = "<group>"; };
 		A2000000000000000000000D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A2000000000000000000000E /* StandSpace.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StandSpace.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A2000000000000000000000F /* AdditionalModules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdditionalModules.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,6 +99,7 @@
 				A2000000000000000000000A /* DateModuleView.swift */,
 				A2000000000000000000000B /* BatteryModuleView.swift */,
 				A2000000000000000000000C /* TextModuleView.swift */,
+				A2000000000000000000000F /* AdditionalModules.swift */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -197,6 +200,7 @@
 				A1000000000000000000000A /* DateModuleView.swift in Sources */,
 				A1000000000000000000000B /* BatteryModuleView.swift in Sources */,
 				A1000000000000000000000C /* TextModuleView.swift in Sources */,
+				A1000000000000000000000D /* AdditionalModules.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -239,7 +243,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = StandSpace/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -247,7 +251,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.2.1;
+				MARKETING_VERSION = 0.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tiburonns.StandSpace;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -261,7 +265,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = StandSpace/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -269,7 +273,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.2.1;
+				MARKETING_VERSION = 0.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tiburonns.StandSpace;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
