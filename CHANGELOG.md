@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.0 — Natural Canvas & useful modules
+
+- Added explicit grid positions so modules can be placed in specific cells and gaps can remain empty.
+- Added live drag-to-resize directly from the grid with snapping and size feedback.
+- Added Timer, Calendar, Storage, Device Info, and Day Progress modules.
+- Added calendar permission handling without prompting from the module gallery.
+- Updated the default dashboard to showcase more than clock/date/battery.
+- Added CI build validation for future Xcode changes.
+
 All notable StandSpace changes are tracked here.
 
 ## 0.2.1 — Xcode build fix
