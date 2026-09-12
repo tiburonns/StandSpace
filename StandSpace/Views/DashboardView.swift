@@ -324,9 +324,9 @@ struct DashboardView: View {
 
     private func columnCount(for width: CGFloat) -> Int {
         switch width {
-        case 1100...: 8
-        case 760...: 6
-        default: 4
+        case 1100...: return 8
+        case 760...: return 6
+        default: return 4
         }
     }
 
