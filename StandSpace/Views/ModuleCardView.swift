@@ -23,13 +23,23 @@ struct ModuleCardView: View {
             DateModuleView(size: item.size)
         case .battery:
             BatteryModuleView(size: item.size)
+        case .timer:
+            TimerModuleView(size: item.size)
+        case .calendar:
+            CalendarModuleView(size: item.size)
+        case .storage:
+            StorageModuleView(size: item.size)
+        case .device:
+            DeviceInfoModuleView(size: item.size)
+        case .dayProgress:
+            DayProgressModuleView(size: item.size)
         case .text:
             TextModuleView(item: item)
         }
     }
 
     private var padding: CGFloat {
-        item.size == .small ? 16 : 22
+        return item.size == .small ? 16 : 22
     }
 
     @ViewBuilder
@@ -63,7 +73,9 @@ struct ModuleCardView: View {
         if item.style == .outline || item.style == .glass || item.style == .tinted {
             RoundedRectangle(cornerRadius: 28, style: .continuous)
                 .stroke(
-                    item.style == .tinted ? Color.accentColor.opacity(0.35) : Color.white.opacity(item.style == .outline ? 0.35 : 0.12),
+                    item.style == .tinted
+                        ? Color.accentColor.opacity(0.35)
+                        : Color.white.opacity(item.style == .outline ? 0.35 : 0.12),
                     lineWidth: 1
                 )
         }
