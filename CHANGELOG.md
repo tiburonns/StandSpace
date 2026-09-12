@@ -2,6 +2,11 @@
 
 All notable StandSpace changes are tracked here.
 
+## 0.2.1 — Xcode build fix
+
+- Fixed a non-exhaustive `ModuleSize` switch in `ClockModuleView` introduced when 0.2 added larger module sizes.
+- Made clock sizing derive from grid spans so future size additions do not silently break compilation.
+
 ## 0.2.0 — Canvas foundations
 
 - Added direct edit mode entered from the toolbar or by long-pressing a module.

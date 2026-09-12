@@ -11,7 +11,7 @@ struct ClockModuleView: View {
                     .minimumScaleFactor(0.45)
                     .lineLimit(1)
 
-                if size != .small {
+                if showsSeconds {
                     Text(context.date, format: .dateTime.second())
                         .font(.system(.title3, design: .monospaced))
                         .foregroundStyle(.secondary)
@@ -21,12 +21,32 @@ struct ClockModuleView: View {
         }
     }
 
+    private var showsSeconds: Bool {
+        size.span.columns > 1 || size.span.rows > 1
+    }
+
     private var fontSize: CGFloat {
-        switch size {
-        case .small: 42
-        case .wide: 66
-        case .tall: 56
-        case .large: 92
+        let span = size.span
+
+        switch (span.columns, span.rows) {
+        case (1, 1):
+            42
+        case (1, 2):
+            56
+        case (2, 1):
+            66
+        case (2, 2):
+            92
+        case (3, 1):
+            82
+        case (4, 1):
+            96
+        case (3, 2):
+            108
+        case (4, 2):
+            122
+        default:
+            66
         }
     }
 }
