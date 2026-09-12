@@ -2,17 +2,9 @@ import SwiftUI
 
 @MainActor
 final class DashboardStore: ObservableObject {
-    @Published var items: [DashboardItem] {
-        didSet { save() }
-    }
-
-    @Published var keepScreenAwake: Bool {
-        didSet { UserDefaults.standard.set(keepScreenAwake, forKey: Keys.keepAwake) }
-    }
-
-    @Published var backgroundStyle: BoardBackgroundStyle {
-        didSet { UserDefaults.standard.set(backgroundStyle.rawValue, forKey: Keys.background) }
-    }
+    @Published var items: [DashboardItem] { didSet { save() } }
+    @Published var keepScreenAwake: Bool { didSet { UserDefaults.standard.set(keepScreenAwake, forKey: Keys.keepAwake) } }
+    @Published var backgroundStyle: BoardBackgroundStyle { didSet { UserDefaults.standard.set(backgroundStyle.rawValue, forKey: Keys.background) } }
 
     private enum Keys {
         static let items = "dashboard.items.v1"
@@ -29,11 +21,9 @@ final class DashboardStore: ObservableObject {
             self.items = Self.defaultItems
         }
 
-        if UserDefaults.standard.object(forKey: Keys.keepAwake) == nil {
-            self.keepScreenAwake = true
-        } else {
-            self.keepScreenAwake = UserDefaults.standard.bool(forKey: Keys.keepAwake)
-        }
+        self.keepScreenAwake = UserDefaults.standard.object(forKey: Keys.keepAwake) == nil
+            ? true
+            : UserDefaults.standard.bool(forKey: Keys.keepAwake)
 
         let rawBackground = UserDefaults.standard.string(forKey: Keys.background)
         self.backgroundStyle = rawBackground.flatMap(BoardBackgroundStyle.init(rawValue:)) ?? .midnight
@@ -41,23 +31,11 @@ final class DashboardStore: ObservableObject {
 
     func add(_ kind: ModuleKind, size: ModuleSize? = nil, style: ModuleStyle = .glass) {
         let chosenSize = size.flatMap { kind.supportedSizes.contains($0) ? $0 : nil } ?? kind.defaultSize
-        let item: DashboardItem
+        var item = DashboardItem(kind: kind, size: chosenSize, style: style)
 
-        switch kind {
-        case .clock:
-            item = DashboardItem(kind: .clock, size: chosenSize, style: style)
-        case .date:
-            item = DashboardItem(kind: .date, size: chosenSize, style: style)
-        case .battery:
-            item = DashboardItem(kind: .battery, size: chosenSize, style: style)
-        case .text:
-            item = DashboardItem(
-                kind: .text,
-                size: chosenSize,
-                style: style,
-                title: "Nota",
-                text: "Tu texto aquí"
-            )
+        if kind == .text {
+            item.title = "Nota"
+            item.text = "Tu texto aquí"
         }
 
         withAnimation(.snappy) {
@@ -80,6 +58,7 @@ final class DashboardStore: ObservableObject {
         guard let index = items.firstIndex(where: { $0.id == id }) else { return }
         var copy = items[index]
         copy.id = UUID()
+        copy.position = nil
         withAnimation(.snappy) {
             items.insert(copy, at: min(index + 1, items.count))
         }
@@ -89,33 +68,33 @@ final class DashboardStore: ObservableObject {
         items.move(fromOffsets: source, toOffset: destination)
     }
 
-    func move(id: UUID, to destination: Int) {
-        guard let source = items.firstIndex(where: { $0.id == id }) else { return }
-        let clamped = max(0, min(destination, items.count - 1))
-        guard source != clamped else { return }
-
+    func setPosition(id: UUID, position: GridPosition?) {
+        guard let index = items.firstIndex(where: { $0.id == id }) else { return }
         withAnimation(.snappy) {
-            let item = items.remove(at: source)
-            items.insert(item, at: min(clamped, items.count))
+            items[index].position = position
         }
     }
 
     func resize(id: UUID, to size: ModuleSize) {
         guard let index = items.firstIndex(where: { $0.id == id }),
               items[index].kind.supportedSizes.contains(size) else { return }
-        withAnimation(.snappy) {
+
+        guard items[index].size != size else { return }
+
+        withAnimation(.snappy(duration: 0.18)) {
             items[index].size = size
         }
     }
 
     func binding(for id: UUID) -> Binding<DashboardItem>? {
         guard items.contains(where: { $0.id == id }) else { return nil }
+
         return Binding(
             get: { [weak self] in
                 self?.items.first(where: { $0.id == id }) ?? DashboardItem(kind: .text)
             },
             set: { [weak self] newValue in
-                guard let self,
+                guard let self = self,
                       let index = self.items.firstIndex(where: { $0.id == id }) else { return }
                 self.items[index] = Self.repairIfNeeded(newValue)
             }
@@ -143,9 +122,10 @@ final class DashboardStore: ObservableObject {
     }
 
     static let defaultItems: [DashboardItem] = [
-        DashboardItem(kind: .clock, size: .large, style: .glass),
-        DashboardItem(kind: .date, size: .wide, style: .minimal),
-        DashboardItem(kind: .battery, size: .small, style: .solid),
-        DashboardItem(kind: .text, size: .small, style: .outline, title: "Hola", text: "StandSpace")
+        DashboardItem(kind: .clock, size: .large, style: .glass, position: GridPosition(column: 0, row: 0)),
+        DashboardItem(kind: .battery, size: .small, style: .solid, position: GridPosition(column: 2, row: 0)),
+        DashboardItem(kind: .date, size: .wide, style: .minimal, position: GridPosition(column: 2, row: 1)),
+        DashboardItem(kind: .dayProgress, size: .wide, style: .tinted),
+        DashboardItem(kind: .timer, size: .wide, style: .glass)
     ]
 }
