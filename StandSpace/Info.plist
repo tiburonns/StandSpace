@@ -18,6 +18,10 @@
     <string>$(MARKETING_VERSION)</string>
     <key>CFBundleVersion</key>
     <string>$(CURRENT_PROJECT_VERSION)</string>
+    <key>NSCalendarsFullAccessUsageDescription</key>
+    <string>StandSpace usa tu calendario para mostrar tu próximo evento en el módulo Calendario.</string>
+    <key>NSCalendarsUsageDescription</key>
+    <string>StandSpace usa tu calendario para mostrar tu próximo evento en el módulo Calendario.</string>
     <key>UILaunchScreen</key>
     <dict/>
     <key>UISupportedInterfaceOrientations</key>
