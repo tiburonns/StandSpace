@@ -33,7 +33,7 @@ struct DashboardView: View {
                         if isEditing {
                             gridBackdrop(
                                 width: canvasWidth,
-                                height: max(layout.height, geometry.size.height - 120),
+                                height: max(layout.height + layout.unit * 2, geometry.size.height - 120),
                                 unit: layout.unit,
                                 columns: columns
                             )
@@ -42,11 +42,20 @@ struct DashboardView: View {
 
                         ForEach(store.items) { item in
                             if let frame = layout.frames[item.id] {
-                                module(item, frame: frame, layout: layout, columns: columns)
+                                module(
+                                    item,
+                                    frame: frame,
+                                    layout: layout,
+                                    columns: columns
+                                )
                             }
                         }
                     }
-                    .frame(width: canvasWidth, height: max(layout.height, geometry.size.height - 72), alignment: .topLeading)
+                    .frame(
+                        width: canvasWidth,
+                        height: max(layout.height + layout.unit, geometry.size.height - 72),
+                        alignment: .topLeading
+                    )
                     .padding(.horizontal, horizontalPadding)
                     .padding(.top, isEditing || controlsVisible ? 70 : 18)
                     .padding(.bottom, 28)
@@ -62,12 +71,12 @@ struct DashboardView: View {
             }
             .contentShape(Rectangle())
             .onTapGesture {
-                guard !isEditing else {
+                if isEditing {
                     selectedID = nil
-                    return
-                }
-                withAnimation(.easeInOut(duration: 0.18)) {
-                    controlsVisible.toggle()
+                } else {
+                    withAnimation(.easeInOut(duration: 0.18)) {
+                        controlsVisible.toggle()
+                    }
                 }
             }
         }
@@ -89,7 +98,9 @@ struct DashboardView: View {
                     ModuleEditorView(item: binding)
                         .toolbar {
                             ToolbarItem(placement: .confirmationAction) {
-                                Button("Listo") { inspectorID = nil }
+                                Button("Listo") {
+                                    inspectorID = nil
+                                }
                             }
                         }
                 }
@@ -112,8 +123,11 @@ struct DashboardView: View {
                 if isEditing {
                     RoundedRectangle(cornerRadius: 28, style: .continuous)
                         .stroke(
-                            isSelected ? Color.white : Color.white.opacity(0.22),
-                            style: StrokeStyle(lineWidth: isSelected ? 2 : 1, dash: isSelected ? [] : [5, 5])
+                            isSelected ? Color.white : Color.white.opacity(0.18),
+                            style: StrokeStyle(
+                                lineWidth: isSelected ? 2 : 1,
+                                dash: isSelected ? [] : [5, 5]
+                            )
                         )
                 }
             }
@@ -146,7 +160,7 @@ struct DashboardView: View {
             }
             .overlay(alignment: .bottomTrailing) {
                 if isEditing && isSelected {
-                    ResizeHandle(
+                    LiveResizeHandle(
                         item: item,
                         unit: layout.unit,
                         spacing: spacing,
@@ -155,11 +169,15 @@ struct DashboardView: View {
                         store.resize(id: item.id, to: size)
                         feedbackTick += 1
                     }
-                    .offset(x: 9, y: 9)
+                    .offset(x: 10, y: 10)
                 }
             }
-            .scaleEffect(isDragging ? 1.025 : 1)
-            .shadow(color: .black.opacity(isDragging ? 0.38 : 0), radius: isDragging ? 22 : 0, y: 10)
+            .scaleEffect(isDragging ? 1.035 : 1)
+            .shadow(
+                color: .black.opacity(isDragging ? 0.38 : 0),
+                radius: isDragging ? 22 : 0,
+                y: 10
+            )
             .offset(
                 x: frame.minX + (isDragging ? dragOffset.width : 0),
                 y: frame.minY + (isDragging ? dragOffset.height : 0)
@@ -167,6 +185,7 @@ struct DashboardView: View {
             .zIndex(isDragging || isSelected ? 10 : 0)
             .onTapGesture {
                 guard isEditing else { return }
+
                 if selectedID == item.id {
                     inspectorID = item.id
                 } else {
@@ -174,8 +193,9 @@ struct DashboardView: View {
                     feedbackTick += 1
                 }
             }
-            .onLongPressGesture(minimumDuration: 0.32) {
+            .onLongPressGesture(minimumDuration: 0.30) {
                 guard !isEditing else { return }
+
                 withAnimation(.snappy) {
                     isEditing = true
                     controlsVisible = true
@@ -184,7 +204,7 @@ struct DashboardView: View {
                 feedbackTick += 1
             }
             .simultaneousGesture(
-                DragGesture(minimumDistance: isEditing ? 4 : 10)
+                DragGesture(minimumDistance: isEditing ? 4 : 12)
                     .onChanged { value in
                         guard isEditing else { return }
                         selectedID = item.id
@@ -194,18 +214,20 @@ struct DashboardView: View {
                     .onEnded { value in
                         guard isEditing else { return }
 
-                        let center = CGPoint(
-                            x: frame.midX + value.translation.width,
-                            y: frame.midY + value.translation.height
+                        let proposedOrigin = CGPoint(
+                            x: frame.minX + value.translation.width,
+                            y: frame.minY + value.translation.height
                         )
 
-                        if let destination = DashboardPackingEngine.nearestIndex(
-                            to: center,
-                            movingID: item.id,
-                            layout: layout
-                        ) {
-                            store.move(id: item.id, to: destination)
-                        }
+                        let snapped = DashboardPackingEngine.snappedPosition(
+                            for: proposedOrigin,
+                            itemSize: item.size,
+                            unit: layout.unit,
+                            spacing: spacing,
+                            columns: columns
+                        )
+
+                        store.setPosition(id: item.id, position: snapped)
 
                         withAnimation(.snappy) {
                             draggingID = nil
@@ -283,25 +305,37 @@ struct DashboardView: View {
         .font(.subheadline.weight(.semibold))
     }
 
-    private func gridBackdrop(width: CGFloat, height: CGFloat, unit: CGFloat, columns: Int) -> some View {
+    private func gridBackdrop(
+        width: CGFloat,
+        height: CGFloat,
+        unit: CGFloat,
+        columns: Int
+    ) -> some View {
         Canvas { context, size in
             let step = unit + spacing
-            var path = Path()
-
-            for column in 0...columns {
-                let x = min(CGFloat(column) * step, size.width)
-                path.move(to: CGPoint(x: x, y: 0))
-                path.addLine(to: CGPoint(x: x, y: size.height))
-            }
-
             let rows = Int(ceil(size.height / max(step, 1)))
-            for row in 0...rows {
-                let y = CGFloat(row) * step
-                path.move(to: CGPoint(x: 0, y: y))
-                path.addLine(to: CGPoint(x: size.width, y: y))
-            }
 
-            context.stroke(path, with: .color(.white.opacity(0.055)), lineWidth: 1)
+            for row in 0...rows {
+                for column in 0..<columns {
+                    let rect = CGRect(
+                        x: CGFloat(column) * step,
+                        y: CGFloat(row) * step,
+                        width: unit,
+                        height: unit
+                    )
+
+                    let path = Path(
+                        roundedRect: rect.insetBy(dx: 2, dy: 2),
+                        cornerRadius: 18
+                    )
+
+                    context.stroke(
+                        path,
+                        with: .color(.white.opacity(0.07)),
+                        lineWidth: 1
+                    )
+                }
+            }
         }
         .frame(width: width, height: height)
         .allowsHitTesting(false)
@@ -317,23 +351,33 @@ struct DashboardView: View {
                 .font(.caption.bold())
                 .frame(width: 30, height: 30)
                 .background(.regularMaterial, in: Circle())
-                .overlay(Circle().stroke(.white.opacity(0.22), lineWidth: 1))
+                .overlay(
+                    Circle()
+                        .stroke(.white.opacity(0.22), lineWidth: 1)
+                )
         }
         .buttonStyle(.plain)
     }
 
     private func columnCount(for width: CGFloat) -> Int {
         switch width {
-        case 1100...: return 8
-        case 760...: return 6
-        default: return 4
+        case 1100...:
+            return 8
+        case 760...:
+            return 6
+        default:
+            return 4
         }
     }
 
     private var inspectorBinding: Binding<IdentifiableUUID?> {
-        Binding(
-            get: { inspectorID.map(IdentifiableUUID.init) },
-            set: { inspectorID = $0?.id }
+        return Binding(
+            get: {
+                inspectorID.map(IdentifiableUUID.init)
+            },
+            set: {
+                inspectorID = $0?.id
+            }
         )
     }
 }
@@ -350,52 +394,92 @@ private struct StandSpaceToolbarButtonStyle: ButtonStyle {
             .padding(.horizontal, 13)
             .padding(.vertical, 9)
             .background(
-                prominent ? AnyShapeStyle(Color.white.opacity(0.18)) : AnyShapeStyle(.ultraThinMaterial),
+                prominent
+                    ? AnyShapeStyle(Color.white.opacity(0.18))
+                    : AnyShapeStyle(.ultraThinMaterial),
                 in: Capsule()
             )
-            .overlay(Capsule().stroke(.white.opacity(prominent ? 0.20 : 0.10), lineWidth: 1))
+            .overlay(
+                Capsule()
+                    .stroke(.white.opacity(prominent ? 0.20 : 0.10), lineWidth: 1)
+            )
             .scaleEffect(configuration.isPressed ? 0.96 : 1)
             .opacity(configuration.isPressed ? 0.82 : 1)
     }
 }
 
-private struct ResizeHandle: View {
+private struct LiveResizeHandle: View {
     let item: DashboardItem
     let unit: CGFloat
     let spacing: CGFloat
     let maxColumns: Int
     let onResize: (ModuleSize) -> Void
 
-    @State private var translation: CGSize = .zero
+    @State private var startSize: ModuleSize?
+    @State private var previewSize: ModuleSize?
 
     var body: some View {
-        Image(systemName: "arrow.up.left.and.arrow.down.right")
-            .font(.caption.bold())
-            .frame(width: 32, height: 32)
-            .background(.regularMaterial, in: Circle())
-            .overlay(Circle().stroke(.white.opacity(0.25), lineWidth: 1))
-            .scaleEffect(translation == .zero ? 1 : 1.08)
-            .gesture(
-                DragGesture(minimumDistance: 0)
-                    .onChanged { value in
-                        translation = value.translation
-                    }
-                    .onEnded { value in
-                        let step = max(unit + spacing, 1)
-                        let current = item.size.span
-                        let columns = min(
-                            maxColumns,
-                            max(1, current.columns + Int((value.translation.width / step).rounded()))
-                        )
-                        let rows = max(1, current.rows + Int((value.translation.height / step).rounded()))
-                        let size = ModuleSize.closestSupported(
-                            columns: columns,
-                            rows: rows,
-                            supported: item.kind.supportedSizes
-                        )
-                        onResize(size)
-                        withAnimation(.snappy) { translation = .zero }
-                    }
-            )
+        ZStack(alignment: .bottomTrailing) {
+            if let previewSize = previewSize {
+                Text(previewSize.title)
+                    .font(.caption2.bold())
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 5)
+                    .background(.regularMaterial, in: Capsule())
+                    .offset(x: -32, y: -32)
+            }
+
+            Image(systemName: "arrow.up.left.and.arrow.down.right")
+                .font(.caption.bold())
+                .frame(width: 34, height: 34)
+                .background(.regularMaterial, in: Circle())
+                .overlay(
+                    Circle()
+                        .stroke(.white.opacity(0.28), lineWidth: 1)
+                )
+                .contentShape(Circle())
+                .gesture(
+                    DragGesture(minimumDistance: 0)
+                        .onChanged { value in
+                            if startSize == nil {
+                                startSize = item.size
+                                previewSize = item.size
+                            }
+
+                            guard let baseSize = startSize else { return }
+
+                            let step = max(unit + spacing, 1)
+                            let base = baseSize.span
+                            let columns = min(
+                                maxColumns,
+                                max(
+                                    1,
+                                    base.columns + Int((value.translation.width / step).rounded())
+                                )
+                            )
+                            let rows = max(
+                                1,
+                                base.rows + Int((value.translation.height / step).rounded())
+                            )
+
+                            let newSize = ModuleSize.closestSupported(
+                                columns: columns,
+                                rows: rows,
+                                supported: item.kind.supportedSizes
+                            )
+
+                            if previewSize != newSize {
+                                previewSize = newSize
+                                onResize(newSize)
+                            }
+                        }
+                        .onEnded { _ in
+                            withAnimation(.easeOut(duration: 0.15)) {
+                                startSize = nil
+                                previewSize = nil
+                            }
+                        }
+                )
+        }
     }
 }
