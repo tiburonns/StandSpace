@@ -10,9 +10,9 @@ enum ModuleCategory: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .essentials: "Esenciales"
-        case .information: "Información"
-        case .personal: "Personal"
+        case .essentials: return "Esenciales"
+        case .information: return "Información"
+        case .personal: return "Personal"
         }
     }
 }
@@ -27,45 +27,45 @@ enum ModuleKind: String, Codable, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .clock: "Reloj"
-        case .date: "Fecha"
-        case .battery: "Batería"
-        case .text: "Texto"
+        case .clock: return "Reloj"
+        case .date: return "Fecha"
+        case .battery: return "Batería"
+        case .text: return "Texto"
         }
     }
 
     var subtitle: String {
         switch self {
-        case .clock: "Hora actual con diferentes proporciones"
-        case .date: "Día, fecha y año de un vistazo"
-        case .battery: "Nivel y estado de carga del dispositivo"
-        case .text: "Notas, frases o información personalizada"
+        case .clock: return "Hora actual con diferentes proporciones"
+        case .date: return "Día, fecha y año de un vistazo"
+        case .battery: return "Nivel y estado de carga del dispositivo"
+        case .text: return "Notas, frases o información personalizada"
         }
     }
 
     var icon: String {
         switch self {
-        case .clock: "clock"
-        case .date: "calendar"
-        case .battery: "battery.75percent"
-        case .text: "text.quote"
+        case .clock: return "clock"
+        case .date: return "calendar"
+        case .battery: return "battery.75percent"
+        case .text: return "text.quote"
         }
     }
 
     var category: ModuleCategory {
         switch self {
-        case .clock, .battery: .essentials
-        case .date: .information
-        case .text: .personal
+        case .clock, .battery: return .essentials
+        case .date: return .information
+        case .text: return .personal
         }
     }
 
     var defaultSize: ModuleSize {
         switch self {
-        case .clock: .large
-        case .date: .wide
-        case .battery: .small
-        case .text: .wide
+        case .clock: return .large
+        case .date: return .wide
+        case .battery: return .small
+        case .text: return .wide
         }
     }
 
@@ -100,14 +100,14 @@ enum ModuleSize: String, Codable, CaseIterable, Identifiable {
 
     var span: ModuleSpan {
         switch self {
-        case .small: ModuleSpan(columns: 1, rows: 1)
-        case .wide: ModuleSpan(columns: 2, rows: 1)
-        case .tall: ModuleSpan(columns: 1, rows: 2)
-        case .large: ModuleSpan(columns: 2, rows: 2)
-        case .tripleWide: ModuleSpan(columns: 3, rows: 1)
-        case .banner: ModuleSpan(columns: 4, rows: 1)
-        case .triple: ModuleSpan(columns: 3, rows: 2)
-        case .hero: ModuleSpan(columns: 4, rows: 2)
+        case .small: return ModuleSpan(columns: 1, rows: 1)
+        case .wide: return ModuleSpan(columns: 2, rows: 1)
+        case .tall: return ModuleSpan(columns: 1, rows: 2)
+        case .large: return ModuleSpan(columns: 2, rows: 2)
+        case .tripleWide: return ModuleSpan(columns: 3, rows: 1)
+        case .banner: return ModuleSpan(columns: 4, rows: 1)
+        case .triple: return ModuleSpan(columns: 3, rows: 2)
+        case .hero: return ModuleSpan(columns: 4, rows: 2)
         }
     }
 
@@ -139,12 +139,12 @@ enum ModuleStyle: String, Codable, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .glass: "Cristal"
-        case .minimal: "Minimalista"
-        case .solid: "Sólido"
-        case .outline: "Contorno"
-        case .gradient: "Gradiente"
-        case .tinted: "Tinte"
+        case .glass: return "Cristal"
+        case .minimal: return "Minimalista"
+        case .solid: return "Sólido"
+        case .outline: return "Contorno"
+        case .gradient: return "Gradiente"
+        case .tinted: return "Tinte"
         }
     }
 }
@@ -162,12 +162,12 @@ enum BoardBackgroundStyle: String, Codable, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .black: "Negro"
-        case .midnight: "Medianoche"
-        case .standbyRed: "Rojo nocturno"
-        case .oled: "OLED"
-        case .aurora: "Aurora"
-        case .warm: "Cálido"
+        case .black: return "Negro"
+        case .midnight: return "Medianoche"
+        case .standbyRed: return "Rojo nocturno"
+        case .oled: return "OLED"
+        case .aurora: return "Aurora"
+        case .warm: return "Cálido"
         }
     }
 
