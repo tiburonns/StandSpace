@@ -3,7 +3,9 @@ import SwiftUI
 
 enum ModuleCategory: String, CaseIterable, Identifiable {
     case essentials
+    case productivity
     case information
+    case system
     case personal
 
     var id: String { rawValue }
@@ -11,7 +13,9 @@ enum ModuleCategory: String, CaseIterable, Identifiable {
     var title: String {
         switch self {
         case .essentials: return "Esenciales"
+        case .productivity: return "Productividad"
         case .information: return "Información"
+        case .system: return "Sistema"
         case .personal: return "Personal"
         }
     }
@@ -21,6 +25,11 @@ enum ModuleKind: String, Codable, CaseIterable, Identifiable {
     case clock
     case date
     case battery
+    case timer
+    case calendar
+    case storage
+    case device
+    case dayProgress
     case text
 
     var id: String { rawValue }
@@ -30,16 +39,26 @@ enum ModuleKind: String, Codable, CaseIterable, Identifiable {
         case .clock: return "Reloj"
         case .date: return "Fecha"
         case .battery: return "Batería"
+        case .timer: return "Temporizador"
+        case .calendar: return "Próximo evento"
+        case .storage: return "Almacenamiento"
+        case .device: return "Dispositivo"
+        case .dayProgress: return "Progreso del día"
         case .text: return "Texto"
         }
     }
 
     var subtitle: String {
         switch self {
-        case .clock: return "Hora actual con diferentes proporciones"
+        case .clock: return "Hora actual con distintos tamaños"
         case .date: return "Día, fecha y año de un vistazo"
-        case .battery: return "Nivel y estado de carga del dispositivo"
-        case .text: return "Notas, frases o información personalizada"
+        case .battery: return "Nivel y estado de carga"
+        case .timer: return "Cuenta regresiva rápida"
+        case .calendar: return "El siguiente evento de tu calendario"
+        case .storage: return "Espacio usado y disponible"
+        case .device: return "Nombre, modelo y sistema"
+        case .dayProgress: return "Qué porcentaje del día ya pasó"
+        case .text: return "Notas o información personalizada"
         }
     }
 
@@ -48,6 +67,11 @@ enum ModuleKind: String, Codable, CaseIterable, Identifiable {
         case .clock: return "clock"
         case .date: return "calendar"
         case .battery: return "battery.75percent"
+        case .timer: return "timer"
+        case .calendar: return "calendar.badge.clock"
+        case .storage: return "internaldrive"
+        case .device: return "iphone"
+        case .dayProgress: return "circle.lefthalf.filled"
         case .text: return "text.quote"
         }
     }
@@ -55,7 +79,9 @@ enum ModuleKind: String, Codable, CaseIterable, Identifiable {
     var category: ModuleCategory {
         switch self {
         case .clock, .battery: return .essentials
-        case .date: return .information
+        case .timer, .calendar: return .productivity
+        case .date, .dayProgress: return .information
+        case .storage, .device: return .system
         case .text: return .personal
         }
     }
@@ -65,6 +91,11 @@ enum ModuleKind: String, Codable, CaseIterable, Identifiable {
         case .clock: return .large
         case .date: return .wide
         case .battery: return .small
+        case .timer: return .wide
+        case .calendar: return .wide
+        case .storage: return .wide
+        case .device: return .wide
+        case .dayProgress: return .wide
         case .text: return .wide
         }
     }
@@ -72,19 +103,28 @@ enum ModuleKind: String, Codable, CaseIterable, Identifiable {
     var supportedSizes: [ModuleSize] {
         switch self {
         case .clock:
-            [.small, .wide, .large, .tripleWide, .banner, .hero]
+            return [.small, .wide, .large, .tripleWide, .banner, .hero]
         case .date:
-            [.small, .wide, .tall, .large, .tripleWide]
+            return [.small, .wide, .tall, .large, .tripleWide]
         case .battery:
-            [.small, .wide, .tall, .large]
+            return [.small, .wide, .tall, .large]
+        case .timer:
+            return [.small, .wide, .large, .tripleWide]
+        case .calendar:
+            return [.wide, .large, .tripleWide, .banner]
+        case .storage:
+            return [.small, .wide, .large, .tripleWide]
+        case .device:
+            return [.wide, .large, .tripleWide]
+        case .dayProgress:
+            return [.small, .wide, .large, .tripleWide]
         case .text:
-            ModuleSize.allCases
+            return ModuleSize.allCases
         }
     }
 }
 
 enum ModuleSize: String, Codable, CaseIterable, Identifiable {
-    // Keep the original raw values so v0.1 dashboards decode without migration.
     case small
     case wide
     case tall
@@ -95,8 +135,7 @@ enum ModuleSize: String, Codable, CaseIterable, Identifiable {
     case hero
 
     var id: String { rawValue }
-
-    var title: String { "\(span.columns) × \(span.rows)" }
+    var title: String { return "\(span.columns) × \(span.rows)" }
 
     var span: ModuleSpan {
         switch self {
@@ -111,12 +150,8 @@ enum ModuleSize: String, Codable, CaseIterable, Identifiable {
         }
     }
 
-    static func closestSupported(
-        columns: Int,
-        rows: Int,
-        supported: [ModuleSize]
-    ) -> ModuleSize {
-        supported.min { lhs, rhs in
+    static func closestSupported(columns: Int, rows: Int, supported: [ModuleSize]) -> ModuleSize {
+        return supported.min { lhs, rhs in
             let left = abs(lhs.span.columns - columns) + abs(lhs.span.rows - rows)
             let right = abs(rhs.span.columns - columns) + abs(rhs.span.rows - rows)
             if left == right {
@@ -150,7 +185,6 @@ enum ModuleStyle: String, Codable, CaseIterable, Identifiable {
 }
 
 enum BoardBackgroundStyle: String, Codable, CaseIterable, Identifiable {
-    // Original cases preserved for v0.1 UserDefaults compatibility.
     case black
     case midnight
     case standbyRed
@@ -177,35 +211,20 @@ enum BoardBackgroundStyle: String, Codable, CaseIterable, Identifiable {
         case .black, .oled:
             Color.black
         case .midnight:
-            LinearGradient(
-                colors: [Color.black, Color(red: 0.05, green: 0.07, blue: 0.14)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+            LinearGradient(colors: [Color.black, Color(red: 0.05, green: 0.07, blue: 0.14)], startPoint: .topLeading, endPoint: .bottomTrailing)
         case .standbyRed:
-            LinearGradient(
-                colors: [Color.black, Color(red: 0.22, green: 0.01, blue: 0.01)],
-                startPoint: .top,
-                endPoint: .bottom
-            )
+            LinearGradient(colors: [Color.black, Color(red: 0.22, green: 0.01, blue: 0.01)], startPoint: .top, endPoint: .bottom)
         case .aurora:
-            LinearGradient(
-                colors: [
-                    Color(red: 0.01, green: 0.02, blue: 0.08),
-                    Color(red: 0.03, green: 0.16, blue: 0.16),
-                    Color(red: 0.08, green: 0.04, blue: 0.18)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+            LinearGradient(colors: [Color(red: 0.01, green: 0.02, blue: 0.08), Color(red: 0.03, green: 0.16, blue: 0.16), Color(red: 0.08, green: 0.04, blue: 0.18)], startPoint: .topLeading, endPoint: .bottomTrailing)
         case .warm:
-            LinearGradient(
-                colors: [Color.black, Color(red: 0.20, green: 0.09, blue: 0.03)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+            LinearGradient(colors: [Color.black, Color(red: 0.20, green: 0.09, blue: 0.03)], startPoint: .topLeading, endPoint: .bottomTrailing)
         }
     }
+}
+
+struct GridPosition: Codable, Equatable {
+    var column: Int
+    var row: Int
 }
 
 struct DashboardItem: Identifiable, Codable, Equatable {
@@ -215,6 +234,7 @@ struct DashboardItem: Identifiable, Codable, Equatable {
     var style: ModuleStyle
     var title: String
     var text: String
+    var position: GridPosition?
 
     init(
         id: UUID = UUID(),
@@ -222,7 +242,8 @@ struct DashboardItem: Identifiable, Codable, Equatable {
         size: ModuleSize? = nil,
         style: ModuleStyle = .glass,
         title: String = "",
-        text: String = ""
+        text: String = "",
+        position: GridPosition? = nil
     ) {
         self.id = id
         self.kind = kind
@@ -230,6 +251,7 @@ struct DashboardItem: Identifiable, Codable, Equatable {
         self.style = style
         self.title = title
         self.text = text
+        self.position = position
     }
 }
 
