@@ -12,23 +12,20 @@ extension View {
 
 struct PackedDashboardLayout {
     let frames: [UUID: CGRect]
-    let orderedFrames: [(id: UUID, frame: CGRect)]
+    let positions: [UUID: GridPosition]
     let height: CGFloat
     let unit: CGFloat
+    let columns: Int
 }
 
 enum DashboardPackingEngine {
-    static func pack(
-        items: [DashboardItem],
-        width: CGFloat,
-        columns: Int,
-        spacing: CGFloat
-    ) -> PackedDashboardLayout {
+    static func pack(items: [DashboardItem], width: CGFloat, columns: Int, spacing: CGFloat) -> PackedDashboardLayout {
         let safeColumns = max(columns, 1)
         let unit = max((width - CGFloat(safeColumns - 1) * spacing) / CGFloat(safeColumns), 1)
+
         var occupied = Array(repeating: Array(repeating: false, count: safeColumns), count: 1)
         var frames: [UUID: CGRect] = [:]
-        var orderedFrames: [(id: UUID, frame: CGRect)] = []
+        var positions: [UUID: GridPosition] = [:]
         var maxRow = 0
 
         for item in items {
@@ -38,60 +35,97 @@ enum DashboardPackingEngine {
                 rows: max(requested.rows, 1)
             )
 
-            let cell = firstAvailableCell(span: span, occupied: &occupied, columns: safeColumns)
-            markOccupied(cell: cell, span: span, occupied: &occupied)
+            var cell: GridPosition?
 
-            let x = CGFloat(cell.column) * (unit + spacing)
-            let y = CGFloat(cell.row) * (unit + spacing)
-            let itemWidth = CGFloat(span.columns) * unit + CGFloat(span.columns - 1) * spacing
-            let itemHeight = CGFloat(span.rows) * unit + CGFloat(span.rows - 1) * spacing
-            let frame = CGRect(x: x, y: y, width: itemWidth, height: itemHeight)
+            if let preferred = item.position,
+               canPlace(preferred, span: span, occupied: &occupied, columns: safeColumns) {
+                cell = preferred
+            }
 
+            if cell == nil {
+                cell = firstAvailableCell(span: span, occupied: &occupied, columns: safeColumns)
+            }
+
+            guard let resolved = cell else { continue }
+            markOccupied(resolved, span: span, occupied: &occupied)
+
+            let frame = frameFor(position: resolved, span: span, unit: unit, spacing: spacing)
             frames[item.id] = frame
-            orderedFrames.append((item.id, frame))
-            maxRow = max(maxRow, cell.row + span.rows)
+            positions[item.id] = resolved
+            maxRow = max(maxRow, resolved.row + span.rows)
         }
 
         let height = maxRow == 0 ? 0 : CGFloat(maxRow) * unit + CGFloat(maxRow - 1) * spacing
-        return PackedDashboardLayout(frames: frames, orderedFrames: orderedFrames, height: height, unit: unit)
+        return PackedDashboardLayout(frames: frames, positions: positions, height: height, unit: unit, columns: safeColumns)
     }
 
-    static func nearestIndex(
-        to point: CGPoint,
-        movingID: UUID,
-        layout: PackedDashboardLayout
-    ) -> Int? {
-        let candidates = layout.orderedFrames.enumerated().filter { $0.element.id != movingID }
-        guard !candidates.isEmpty else { return 0 }
+    static func snappedPosition(
+        for point: CGPoint,
+        itemSize: ModuleSize,
+        unit: CGFloat,
+        spacing: CGFloat,
+        columns: Int
+    ) -> GridPosition {
+        let step = max(unit + spacing, 1)
+        let span = itemSize.span
 
-        return candidates.min { lhs, rhs in
-            distance(point, lhs.element.frame.center) < distance(point, rhs.element.frame.center)
-        }?.offset
+        let rawColumn = Int((point.x / step).rounded())
+        let rawRow = Int((point.y / step).rounded())
+
+        let maxColumn = max(0, columns - span.columns)
+        return GridPosition(
+            column: min(max(rawColumn, 0), maxColumn),
+            row: max(rawRow, 0)
+        )
     }
 
-    private static func distance(_ lhs: CGPoint, _ rhs: CGPoint) -> CGFloat {
-        hypot(lhs.x - rhs.x, lhs.y - rhs.y)
+    private static func frameFor(position: GridPosition, span: ModuleSpan, unit: CGFloat, spacing: CGFloat) -> CGRect {
+        let x = CGFloat(position.column) * (unit + spacing)
+        let y = CGFloat(position.row) * (unit + spacing)
+        let width = CGFloat(span.columns) * unit + CGFloat(span.columns - 1) * spacing
+        let height = CGFloat(span.rows) * unit + CGFloat(span.rows - 1) * spacing
+        return CGRect(x: x, y: y, width: width, height: height)
+    }
+
+    private static func canPlace(
+        _ position: GridPosition,
+        span: ModuleSpan,
+        occupied: inout [[Bool]],
+        columns: Int
+    ) -> Bool {
+        guard position.column >= 0,
+              position.row >= 0,
+              position.column + span.columns <= columns else { return false }
+
+        ensureRows(position.row + span.rows, occupied: &occupied, columns: columns)
+
+        for row in position.row..<(position.row + span.rows) {
+            for column in position.column..<(position.column + span.columns) {
+                if occupied[row][column] { return false }
+            }
+        }
+        return true
     }
 
     private static func firstAvailableCell(
         span: ModuleSpan,
         occupied: inout [[Bool]],
         columns: Int
-    ) -> (row: Int, column: Int) {
+    ) -> GridPosition {
         var row = 0
 
         while true {
             ensureRows(row + span.rows, occupied: &occupied, columns: columns)
 
-            for column in 0...(columns - span.columns) {
-                var fits = true
-                for r in row..<(row + span.rows) {
-                    for c in column..<(column + span.columns) where occupied[r][c] {
-                        fits = false
+            if span.columns <= columns {
+                for column in 0...(columns - span.columns) {
+                    let candidate = GridPosition(column: column, row: row)
+                    if canPlace(candidate, span: span, occupied: &occupied, columns: columns) {
+                        return candidate
                     }
                 }
-                if fits { return (row, column) }
             }
+
             row += 1
         }
     }
@@ -102,24 +136,16 @@ enum DashboardPackingEngine {
         }
     }
 
-    private static func markOccupied(
-        cell: (row: Int, column: Int),
-        span: ModuleSpan,
-        occupied: inout [[Bool]]
-    ) {
-        for row in cell.row..<(cell.row + span.rows) {
-            for column in cell.column..<(cell.column + span.columns) {
+    private static func markOccupied(_ position: GridPosition, span: ModuleSpan, occupied: inout [[Bool]]) {
+        for row in position.row..<(position.row + span.rows) {
+            for column in position.column..<(position.column + span.columns) {
                 occupied[row][column] = true
             }
         }
     }
 }
 
-private extension CGRect {
-    var center: CGPoint { CGPoint(x: midX, y: midY) }
-}
-
-// Kept as a reusable Layout container for previews and future module surfaces.
+// Retained for isolated previews and future module surfaces.
 struct DashboardGridLayout: Layout {
     var columns: Int = 4
     var spacing: CGFloat = 12
@@ -135,11 +161,7 @@ struct DashboardGridLayout: Layout {
         cache = Cache()
     }
 
-    func sizeThatFits(
-        proposal: ProposedViewSize,
-        subviews: Subviews,
-        cache: inout Cache
-    ) -> CGSize {
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout Cache) -> CGSize {
         let width = proposal.width ?? 800
         let result = calculateFrames(width: width, subviews: subviews)
         cache.frames = result.frames
@@ -147,12 +169,7 @@ struct DashboardGridLayout: Layout {
         return result.size
     }
 
-    func placeSubviews(
-        in bounds: CGRect,
-        proposal: ProposedViewSize,
-        subviews: Subviews,
-        cache: inout Cache
-    ) {
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout Cache) {
         if cache.frames.count != subviews.count {
             let result = calculateFrames(width: bounds.width, subviews: subviews)
             cache.frames = result.frames
@@ -172,69 +189,17 @@ struct DashboardGridLayout: Layout {
     private func calculateFrames(width: CGFloat, subviews: Subviews) -> (frames: [CGRect], size: CGSize) {
         let safeColumns = max(columns, 1)
         let unit = max((width - CGFloat(safeColumns - 1) * spacing) / CGFloat(safeColumns), 1)
-        var occupied = Array(repeating: Array(repeating: false, count: safeColumns), count: 1)
         var frames: [CGRect] = []
-        var maxRow = 0
+        var y: CGFloat = 0
 
         for subview in subviews {
-            let requested = subview[ModuleSpanLayoutKey.self]
-            let span = ModuleSpan(
-                columns: min(max(requested.columns, 1), safeColumns),
-                rows: max(requested.rows, 1)
-            )
-
-            let cell = firstAvailableCell(span: span, occupied: &occupied, columns: safeColumns)
-            markOccupied(cell: cell, span: span, occupied: &occupied)
-
-            let x = CGFloat(cell.column) * (unit + spacing)
-            let y = CGFloat(cell.row) * (unit + spacing)
-            let itemWidth = CGFloat(span.columns) * unit + CGFloat(span.columns - 1) * spacing
-            let itemHeight = CGFloat(span.rows) * unit + CGFloat(span.rows - 1) * spacing
-
-            frames.append(CGRect(x: x, y: y, width: itemWidth, height: itemHeight))
-            maxRow = max(maxRow, cell.row + span.rows)
+            let span = subview[ModuleSpanLayoutKey.self]
+            let width = CGFloat(min(span.columns, safeColumns)) * unit + CGFloat(max(0, min(span.columns, safeColumns) - 1)) * spacing
+            let height = CGFloat(max(span.rows, 1)) * unit + CGFloat(max(span.rows - 1, 0)) * spacing
+            frames.append(CGRect(x: 0, y: y, width: width, height: height))
+            y += height + spacing
         }
 
-        let height = maxRow == 0 ? 0 : CGFloat(maxRow) * unit + CGFloat(maxRow - 1) * spacing
-        return (frames, CGSize(width: width, height: height))
-    }
-
-    private func firstAvailableCell(
-        span: ModuleSpan,
-        occupied: inout [[Bool]],
-        columns: Int
-    ) -> (row: Int, column: Int) {
-        var row = 0
-        while true {
-            ensureRows(row + span.rows, occupied: &occupied, columns: columns)
-            for column in 0...(columns - span.columns) {
-                var fits = true
-                for r in row..<(row + span.rows) {
-                    for c in column..<(column + span.columns) where occupied[r][c] {
-                        fits = false
-                    }
-                }
-                if fits { return (row, column) }
-            }
-            row += 1
-        }
-    }
-
-    private func ensureRows(_ count: Int, occupied: inout [[Bool]], columns: Int) {
-        while occupied.count < count {
-            occupied.append(Array(repeating: false, count: columns))
-        }
-    }
-
-    private func markOccupied(
-        cell: (row: Int, column: Int),
-        span: ModuleSpan,
-        occupied: inout [[Bool]]
-    ) {
-        for row in cell.row..<(cell.row + span.rows) {
-            for column in cell.column..<(cell.column + span.columns) {
-                occupied[row][column] = true
-            }
-        }
+        return (frames, CGSize(width: width, height: max(0, y - spacing)))
     }
 }
