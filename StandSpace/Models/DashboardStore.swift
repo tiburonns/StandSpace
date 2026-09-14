@@ -59,6 +59,8 @@ final class DashboardStore: ObservableObject {
         var copy = items[index]
         copy.id = UUID()
         copy.position = nil
+        copy.landscapePosition = nil
+
         withAnimation(.snappy) {
             items.insert(copy, at: min(index + 1, items.count))
         }
@@ -68,21 +70,108 @@ final class DashboardStore: ObservableObject {
         items.move(fromOffsets: source, toOffset: destination)
     }
 
-    func setPosition(id: UUID, position: GridPosition?) {
+    func setPosition(
+        id: UUID,
+        position: GridPosition?,
+        orientation: CanvasOrientation = .portrait
+    ) {
         guard let index = items.firstIndex(where: { $0.id == id }) else { return }
+
         withAnimation(.snappy) {
-            items[index].position = position
+            switch orientation {
+            case .portrait:
+                items[index].position = position
+            case .landscape:
+                items[index].landscapePosition = position
+            }
         }
     }
 
-    func resize(id: UUID, to size: ModuleSize) {
+    func resize(
+        id: UUID,
+        to size: ModuleSize,
+        orientation: CanvasOrientation = .portrait
+    ) {
         guard let index = items.firstIndex(where: { $0.id == id }),
               items[index].kind.supportedSizes.contains(size) else { return }
 
-        guard items[index].size != size else { return }
+        let current = items[index].size(for: orientation)
+        guard current != size else { return }
 
         withAnimation(.snappy(duration: 0.18)) {
-            items[index].size = size
+            switch orientation {
+            case .portrait:
+                items[index].size = size
+            case .landscape:
+                items[index].landscapeSize = size
+            }
+        }
+    }
+
+    func applyLandscapePreset(_ preset: LandscapePreset, columns: Int) {
+        guard !items.isEmpty else { return }
+
+        withAnimation(.snappy) {
+            for index in items.indices {
+                items[index].landscapePosition = nil
+                items[index].landscapeSize = nil
+            }
+
+            switch preset {
+            case .adaptive:
+                break
+
+            case .duo:
+                let slotWidth = max(2, columns / 2)
+                for index in items.indices.prefix(2) {
+                    let column = index == 0 ? 0 : slotWidth
+                    items[index].landscapePosition = GridPosition(column: column, row: 0)
+                    items[index].landscapeSize = Self.bestSize(
+                        for: items[index].kind,
+                        maxColumns: slotWidth,
+                        maxRows: 2
+                    )
+                }
+
+            case .quad:
+                let slotWidth = max(2, columns / 2)
+                let positions = [
+                    GridPosition(column: 0, row: 0),
+                    GridPosition(column: slotWidth, row: 0),
+                    GridPosition(column: 0, row: 2),
+                    GridPosition(column: slotWidth, row: 2)
+                ]
+
+                for index in items.indices.prefix(4) {
+                    items[index].landscapePosition = positions[index]
+                    items[index].landscapeSize = Self.bestSize(
+                        for: items[index].kind,
+                        maxColumns: slotWidth,
+                        maxRows: 2
+                    )
+                }
+
+            case .focus:
+                let focusIndex = items.firstIndex(where: { $0.kind == .clock }) ?? items.startIndex
+                items[focusIndex].landscapePosition = GridPosition(column: 0, row: 0)
+                items[focusIndex].landscapeSize = Self.bestSize(
+                    for: items[focusIndex].kind,
+                    maxColumns: min(columns, 4),
+                    maxRows: 2
+                )
+
+                var row = 2
+                for index in items.indices where index != focusIndex {
+                    items[index].landscapePosition = GridPosition(column: 0, row: row)
+                    let size = Self.bestSize(
+                        for: items[index].kind,
+                        maxColumns: min(columns, 4),
+                        maxRows: 1
+                    )
+                    items[index].landscapeSize = size
+                    row += max(size.span.rows, 1)
+                }
+            }
         }
     }
 
@@ -115,17 +204,79 @@ final class DashboardStore: ObservableObject {
     }
 
     private static func repairIfNeeded(_ item: DashboardItem) -> DashboardItem {
-        guard !item.kind.supportedSizes.contains(item.size) else { return item }
         var repaired = item
-        repaired.size = item.kind.defaultSize
+
+        if !item.kind.supportedSizes.contains(item.size) {
+            repaired.size = item.kind.defaultSize
+        }
+
+        if let landscapeSize = item.landscapeSize,
+           !item.kind.supportedSizes.contains(landscapeSize) {
+            repaired.landscapeSize = nil
+        }
+
         return repaired
     }
 
+    private static func bestSize(
+        for kind: ModuleKind,
+        maxColumns: Int,
+        maxRows: Int
+    ) -> ModuleSize {
+        let fitting = kind.supportedSizes.filter {
+            $0.span.columns <= maxColumns && $0.span.rows <= maxRows
+        }
+
+        return fitting.max { lhs, rhs in
+            let leftArea = lhs.span.columns * lhs.span.rows
+            let rightArea = rhs.span.columns * rhs.span.rows
+
+            if leftArea == rightArea {
+                return lhs.span.columns < rhs.span.columns
+            }
+
+            return leftArea < rightArea
+        } ?? kind.defaultSize
+    }
+
     static let defaultItems: [DashboardItem] = [
-        DashboardItem(kind: .clock, size: .large, style: .glass, position: GridPosition(column: 0, row: 0)),
-        DashboardItem(kind: .battery, size: .small, style: .solid, position: GridPosition(column: 2, row: 0)),
-        DashboardItem(kind: .date, size: .wide, style: .minimal, position: GridPosition(column: 2, row: 1)),
-        DashboardItem(kind: .dayProgress, size: .wide, style: .tinted),
-        DashboardItem(kind: .timer, size: .wide, style: .glass)
+        DashboardItem(
+            kind: .clock,
+            size: .large,
+            style: .glass,
+            position: GridPosition(column: 0, row: 0),
+            landscapePosition: GridPosition(column: 0, row: 0),
+            landscapeSize: .hero
+        ),
+        DashboardItem(
+            kind: .battery,
+            size: .small,
+            style: .solid,
+            position: GridPosition(column: 2, row: 0),
+            landscapePosition: GridPosition(column: 4, row: 0),
+            landscapeSize: .large
+        ),
+        DashboardItem(
+            kind: .date,
+            size: .wide,
+            style: .minimal,
+            position: GridPosition(column: 2, row: 1),
+            landscapePosition: GridPosition(column: 6, row: 0),
+            landscapeSize: .wide
+        ),
+        DashboardItem(
+            kind: .dayProgress,
+            size: .wide,
+            style: .tinted,
+            landscapePosition: GridPosition(column: 4, row: 2),
+            landscapeSize: .wide
+        ),
+        DashboardItem(
+            kind: .timer,
+            size: .wide,
+            style: .glass,
+            landscapePosition: GridPosition(column: 6, row: 2),
+            landscapeSize: .wide
+        )
     ]
 }
