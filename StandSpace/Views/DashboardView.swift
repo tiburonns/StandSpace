@@ -17,14 +17,30 @@ struct DashboardView: View {
 
     var body: some View {
         GeometryReader { geometry in
-            let horizontalPadding: CGFloat = geometry.size.width > 900 ? 28 : 18
-            let canvasWidth = max(geometry.size.width - horizontalPadding * 2, 1)
-            let columns = columnCount(for: geometry.size.width)
+            let orientation = canvasOrientation(for: geometry.size)
+            let isLandscape = orientation == .landscape
+            let horizontalPadding = canvasHorizontalPadding(
+                for: geometry.size,
+                orientation: orientation
+            )
+            let canvasWidth = max(
+                geometry.size.width - horizontalPadding * 2,
+                1
+            )
+            let columns = columnCount(
+                for: geometry.size,
+                orientation: orientation
+            )
+            let topInset = canvasTopInset(
+                orientation: orientation,
+                showsControls: controlsVisible || isEditing
+            )
             let layout = DashboardPackingEngine.pack(
                 items: store.items,
                 width: canvasWidth,
                 columns: columns,
-                spacing: spacing
+                spacing: spacing,
+                orientation: orientation
             )
 
             ZStack(alignment: .topLeading) {
@@ -33,7 +49,10 @@ struct DashboardView: View {
                         if isEditing {
                             gridBackdrop(
                                 width: canvasWidth,
-                                height: max(layout.height + layout.unit * 2, geometry.size.height - 120),
+                                height: max(
+                                    layout.height + layout.unit * 2,
+                                    geometry.size.height - topInset - 20
+                                ),
                                 unit: layout.unit,
                                 columns: columns
                             )
@@ -46,27 +65,34 @@ struct DashboardView: View {
                                     item,
                                     frame: frame,
                                     layout: layout,
-                                    columns: columns
+                                    columns: columns,
+                                    orientation: orientation
                                 )
                             }
                         }
                     }
                     .frame(
                         width: canvasWidth,
-                        height: max(layout.height + layout.unit, geometry.size.height - 72),
+                        height: max(
+                            layout.height + layout.unit,
+                            geometry.size.height - topInset
+                        ),
                         alignment: .topLeading
                     )
                     .padding(.horizontal, horizontalPadding)
-                    .padding(.top, isEditing || controlsVisible ? 70 : 18)
-                    .padding(.bottom, 28)
+                    .padding(.top, topInset)
+                    .padding(.bottom, isLandscape ? 12 : 28)
                 }
                 .scrollDisabled(draggingID != nil)
 
                 if controlsVisible || isEditing {
-                    topToolbar
-                        .padding(.horizontal, horizontalPadding)
-                        .padding(.top, 12)
-                        .transition(.move(edge: .top).combined(with: .opacity))
+                    topToolbar(
+                        orientation: orientation,
+                        columns: columns
+                    )
+                    .padding(.horizontal, horizontalPadding)
+                    .padding(.top, isLandscape ? 6 : 12)
+                    .transition(.move(edge: .top).combined(with: .opacity))
                 }
             }
             .contentShape(Rectangle())
@@ -77,6 +103,19 @@ struct DashboardView: View {
                     withAnimation(.easeInOut(duration: 0.18)) {
                         controlsVisible.toggle()
                     }
+                }
+            }
+            .onChange(of: isLandscape) { _, landscape in
+                selectedID = nil
+                draggingID = nil
+                dragOffset = .zero
+
+                if landscape && !isEditing {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        controlsVisible = false
+                    }
+                } else {
+                    controlsVisible = true
                 }
             }
         }
@@ -112,12 +151,14 @@ struct DashboardView: View {
         _ item: DashboardItem,
         frame: CGRect,
         layout: PackedDashboardLayout,
-        columns: Int
+        columns: Int,
+        orientation: CanvasOrientation
     ) -> some View {
+        let renderedItem = item.rendered(for: orientation)
         let isSelected = selectedID == item.id
         let isDragging = draggingID == item.id
 
-        return ModuleCardView(item: item)
+        return ModuleCardView(item: renderedItem)
             .frame(width: frame.width, height: frame.height)
             .overlay {
                 if isEditing {
@@ -161,12 +202,16 @@ struct DashboardView: View {
             .overlay(alignment: .bottomTrailing) {
                 if isEditing && isSelected {
                     LiveResizeHandle(
-                        item: item,
+                        item: renderedItem,
                         unit: layout.unit,
                         spacing: spacing,
                         maxColumns: columns
                     ) { size in
-                        store.resize(id: item.id, to: size)
+                        store.resize(
+                            id: item.id,
+                            to: size,
+                            orientation: orientation
+                        )
                         feedbackTick += 1
                     }
                     .offset(x: 10, y: 10)
@@ -221,74 +266,185 @@ struct DashboardView: View {
 
                         let snapped = DashboardPackingEngine.snappedPosition(
                             for: proposedOrigin,
-                            itemSize: item.size,
+                            itemSize: renderedItem.size,
                             unit: layout.unit,
                             spacing: spacing,
                             columns: columns
                         )
 
-                        store.setPosition(id: item.id, position: snapped)
+                        store.setPosition(
+                            id: item.id,
+                            position: snapped,
+                            orientation: orientation
+                        )
 
                         withAnimation(.snappy) {
                             draggingID = nil
                             dragOffset = .zero
                         }
+
                         feedbackTick += 1
                     }
             )
             .animation(.snappy, value: frame)
     }
 
-    private var topToolbar: some View {
-        HStack(spacing: 10) {
+    @ViewBuilder
+    private func topToolbar(
+        orientation: CanvasOrientation,
+        columns: Int
+    ) -> some View {
+        let isLandscape = orientation == .landscape
+
+        HStack(spacing: isLandscape ? 7 : 10) {
             if isEditing {
                 Button {
                     showingGallery = true
                 } label: {
-                    Label("Agregar", systemImage: "plus")
+                    if isLandscape {
+                        Image(systemName: "plus")
+                    } else {
+                        Label("Agregar", systemImage: "plus")
+                    }
                 }
-                .buttonStyle(StandSpaceToolbarButtonStyle())
+                .buttonStyle(
+                    StandSpaceToolbarButtonStyle(
+                        compact: isLandscape
+                    )
+                )
+
+                if isLandscape {
+                    Menu {
+                        ForEach(LandscapePreset.allCases) { preset in
+                            Button {
+                                store.applyLandscapePreset(
+                                    preset,
+                                    columns: columns
+                                )
+                                feedbackTick += 1
+                            } label: {
+                                Label(
+                                    preset.title,
+                                    systemImage: preset.icon
+                                )
+                            }
+                        }
+                    } label: {
+                        Image(systemName: "rectangle.3.group")
+                    }
+                    .buttonStyle(
+                        StandSpaceToolbarButtonStyle(compact: true)
+                    )
+                    .accessibilityLabel("Diseño horizontal")
+                }
 
                 Menu {
-                    Picker("Fondo", selection: $store.backgroundStyle) {
+                    Picker(
+                        "Fondo",
+                        selection: $store.backgroundStyle
+                    ) {
                         ForEach(BoardBackgroundStyle.allCases) { style in
                             Text(style.title).tag(style)
                         }
                     }
+
+                    Divider()
+
+                    Button {
+                        store.backgroundStyle = .standbyRed
+                    } label: {
+                        Label(
+                            "Modo noche",
+                            systemImage: "moon.stars"
+                        )
+                    }
+
+                    Button {
+                        store.backgroundStyle = .oled
+                    } label: {
+                        Label(
+                            "OLED negro",
+                            systemImage: "circle.fill"
+                        )
+                    }
                 } label: {
-                    Label("Tema", systemImage: "paintpalette")
+                    if isLandscape {
+                        Image(systemName: "paintpalette")
+                    } else {
+                        Label("Tema", systemImage: "paintpalette")
+                    }
                 }
-                .buttonStyle(StandSpaceToolbarButtonStyle())
+                .buttonStyle(
+                    StandSpaceToolbarButtonStyle(
+                        compact: isLandscape
+                    )
+                )
 
                 Spacer()
 
-                Text("Editar StandSpace")
-                    .font(.headline)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
+                if !isLandscape {
+                    Text("Editar StandSpace")
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
 
-                Spacer()
+                    Spacer()
+                }
 
                 Button {
                     withAnimation(.snappy) {
                         isEditing = false
                         selectedID = nil
+                        if isLandscape {
+                            controlsVisible = false
+                        }
                     }
                     feedbackTick += 1
                 } label: {
-                    Text("Listo")
-                        .fontWeight(.semibold)
+                    if isLandscape {
+                        Image(systemName: "checkmark")
+                    } else {
+                        Text("Listo")
+                            .fontWeight(.semibold)
+                    }
                 }
-                .buttonStyle(StandSpaceToolbarButtonStyle(prominent: true))
+                .buttonStyle(
+                    StandSpaceToolbarButtonStyle(
+                        prominent: true,
+                        compact: isLandscape
+                    )
+                )
             } else {
                 Spacer()
+
+                if isLandscape {
+                    Button {
+                        store.backgroundStyle = store.backgroundStyle == .standbyRed
+                            ? .oled
+                            : .standbyRed
+                    } label: {
+                        Image(
+                            systemName: store.backgroundStyle == .standbyRed
+                                ? "circle.lefthalf.filled"
+                                : "moon.stars"
+                        )
+                    }
+                    .buttonStyle(
+                        StandSpaceToolbarButtonStyle(compact: true)
+                    )
+                    .accessibilityLabel("Alternar modo noche")
+                }
 
                 Button {
                     showingSettings = true
                 } label: {
                     Image(systemName: "gearshape")
                 }
-                .buttonStyle(StandSpaceToolbarButtonStyle())
+                .buttonStyle(
+                    StandSpaceToolbarButtonStyle(
+                        compact: isLandscape
+                    )
+                )
 
                 Button {
                     withAnimation(.snappy) {
@@ -297,9 +453,18 @@ struct DashboardView: View {
                     }
                     feedbackTick += 1
                 } label: {
-                    Label("Editar", systemImage: "square.grid.2x2")
+                    if isLandscape {
+                        Image(systemName: "square.grid.2x2")
+                    } else {
+                        Label("Editar", systemImage: "square.grid.2x2")
+                    }
                 }
-                .buttonStyle(StandSpaceToolbarButtonStyle(prominent: true))
+                .buttonStyle(
+                    StandSpaceToolbarButtonStyle(
+                        prominent: true,
+                        compact: isLandscape
+                    )
+                )
             }
         }
         .font(.subheadline.weight(.semibold))
@@ -359,14 +524,62 @@ struct DashboardView: View {
         .buttonStyle(.plain)
     }
 
-    private func columnCount(for width: CGFloat) -> Int {
-        switch width {
-        case 1100...:
-            return 8
-        case 760...:
-            return 6
-        default:
-            return 4
+    private func canvasOrientation(
+        for size: CGSize
+    ) -> CanvasOrientation {
+        return size.width > size.height
+            ? .landscape
+            : .portrait
+    }
+
+    private func columnCount(
+        for size: CGSize,
+        orientation: CanvasOrientation
+    ) -> Int {
+        switch orientation {
+        case .portrait:
+            switch size.width {
+            case 1100...:
+                return 8
+            case 760...:
+                return 6
+            default:
+                return 4
+            }
+
+        case .landscape:
+            switch size.width {
+            case 1180...:
+                return 10
+            case 760...:
+                return 8
+            default:
+                return 6
+            }
+        }
+    }
+
+    private func canvasHorizontalPadding(
+        for size: CGSize,
+        orientation: CanvasOrientation
+    ) -> CGFloat {
+        switch orientation {
+        case .portrait:
+            return size.width > 900 ? 28 : 18
+        case .landscape:
+            return size.width > 1000 ? 20 : 10
+        }
+    }
+
+    private func canvasTopInset(
+        orientation: CanvasOrientation,
+        showsControls: Bool
+    ) -> CGFloat {
+        switch orientation {
+        case .portrait:
+            return showsControls ? 70 : 18
+        case .landscape:
+            return showsControls ? 52 : 8
         }
     }
 
@@ -388,11 +601,16 @@ private struct IdentifiableUUID: Identifiable {
 
 private struct StandSpaceToolbarButtonStyle: ButtonStyle {
     var prominent = false
+    var compact = false
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .padding(.horizontal, 13)
-            .padding(.vertical, 9)
+            .frame(
+                minWidth: compact ? 34 : nil,
+                minHeight: compact ? 34 : nil
+            )
+            .padding(.horizontal, compact ? 7 : 13)
+            .padding(.vertical, compact ? 6 : 9)
             .background(
                 prominent
                     ? AnyShapeStyle(Color.white.opacity(0.18))
@@ -401,7 +619,10 @@ private struct StandSpaceToolbarButtonStyle: ButtonStyle {
             )
             .overlay(
                 Capsule()
-                    .stroke(.white.opacity(prominent ? 0.20 : 0.10), lineWidth: 1)
+                    .stroke(
+                        .white.opacity(prominent ? 0.20 : 0.10),
+                        lineWidth: 1
+                    )
             )
             .scaleEffect(configuration.isPressed ? 0.96 : 1)
             .opacity(configuration.isPressed ? 0.82 : 1)
@@ -429,57 +650,73 @@ private struct LiveResizeHandle: View {
                     .offset(x: -32, y: -32)
             }
 
-            Image(systemName: "arrow.up.left.and.arrow.down.right")
-                .font(.caption.bold())
-                .frame(width: 34, height: 34)
-                .background(.regularMaterial, in: Circle())
-                .overlay(
-                    Circle()
-                        .stroke(.white.opacity(0.28), lineWidth: 1)
-                )
-                .contentShape(Circle())
-                .gesture(
-                    DragGesture(minimumDistance: 0)
-                        .onChanged { value in
-                            if startSize == nil {
-                                startSize = item.size
-                                previewSize = item.size
-                            }
+            Image(
+                systemName: "arrow.up.left.and.arrow.down.right"
+            )
+            .font(.caption.bold())
+            .frame(width: 34, height: 34)
+            .background(.regularMaterial, in: Circle())
+            .overlay(
+                Circle()
+                    .stroke(.white.opacity(0.28), lineWidth: 1)
+            )
+            .contentShape(Circle())
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { value in
+                        if startSize == nil {
+                            startSize = item.size
+                            previewSize = item.size
+                        }
 
-                            guard let baseSize = startSize else { return }
+                        guard let baseSize = startSize else {
+                            return
+                        }
 
-                            let step = max(unit + spacing, 1)
-                            let base = baseSize.span
-                            let columns = min(
-                                maxColumns,
-                                max(
-                                    1,
-                                    base.columns + Int((value.translation.width / step).rounded())
-                                )
-                            )
-                            let rows = max(
+                        let step = max(unit + spacing, 1)
+                        let base = baseSize.span
+                        let columns = min(
+                            maxColumns,
+                            max(
                                 1,
-                                base.rows + Int((value.translation.height / step).rounded())
+                                base.columns
+                                    + Int(
+                                        (
+                                            value.translation.width
+                                            / step
+                                        ).rounded()
+                                    )
                             )
+                        )
+                        let rows = max(
+                            1,
+                            base.rows
+                                + Int(
+                                    (
+                                        value.translation.height
+                                        / step
+                                    ).rounded()
+                                )
+                        )
 
-                            let newSize = ModuleSize.closestSupported(
-                                columns: columns,
-                                rows: rows,
-                                supported: item.kind.supportedSizes
-                            )
+                        let newSize = ModuleSize.closestSupported(
+                            columns: columns,
+                            rows: rows,
+                            supported: item.kind.supportedSizes
+                        )
 
-                            if previewSize != newSize {
-                                previewSize = newSize
-                                onResize(newSize)
-                            }
+                        if previewSize != newSize {
+                            previewSize = newSize
+                            onResize(newSize)
                         }
-                        .onEnded { _ in
-                            withAnimation(.easeOut(duration: 0.15)) {
-                                startSize = nil
-                                previewSize = nil
-                            }
+                    }
+                    .onEnded { _ in
+                        withAnimation(.easeOut(duration: 0.15)) {
+                            startSize = nil
+                            previewSize = nil
                         }
-                )
+                    }
+            )
         }
     }
 }
