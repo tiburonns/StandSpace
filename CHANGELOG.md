@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.3.1 — Landscape StandBy
+
+- Added a first-class landscape mode with 6, 8, or 10 adaptive grid columns.
+- Portrait and landscape now persist independent module positions and sizes.
+- Added landscape layout presets: Adaptive, Duo, Quad, and Focus.
+- Added compact immersive controls that stay out of the way in landscape.
+- Added quick Night and OLED background controls for bedside use.
+- Landscape editing supports drag, snapping, resizing, duplication, and module configuration without changing the portrait layout.
+- Default modules now include a dedicated landscape arrangement.
+
+
 ## 0.3.0 — Natural Canvas & useful modules
 
 - Added explicit grid positions so modules can be placed in specific cells and gaps can remain empty.
