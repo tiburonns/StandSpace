@@ -19,7 +19,13 @@ struct PackedDashboardLayout {
 }
 
 enum DashboardPackingEngine {
-    static func pack(items: [DashboardItem], width: CGFloat, columns: Int, spacing: CGFloat) -> PackedDashboardLayout {
+    static func pack(
+        items: [DashboardItem],
+        width: CGFloat,
+        columns: Int,
+        spacing: CGFloat,
+        orientation: CanvasOrientation = .portrait
+    ) -> PackedDashboardLayout {
         let safeColumns = max(columns, 1)
         let unit = max((width - CGFloat(safeColumns - 1) * spacing) / CGFloat(safeColumns), 1)
 
@@ -29,7 +35,7 @@ enum DashboardPackingEngine {
         var maxRow = 0
 
         for item in items {
-            let requested = item.size.span
+            let requested = item.size(for: orientation).span
             let span = ModuleSpan(
                 columns: min(max(requested.columns, 1), safeColumns),
                 rows: max(requested.rows, 1)
@@ -37,7 +43,7 @@ enum DashboardPackingEngine {
 
             var cell: GridPosition?
 
-            if let preferred = item.position,
+            if let preferred = item.position(for: orientation),
                canPlace(preferred, span: span, occupied: &occupied, columns: safeColumns) {
                 cell = preferred
             }
