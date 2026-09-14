@@ -1,6 +1,38 @@
 import Foundation
 import SwiftUI
 
+enum CanvasOrientation: String {
+    case portrait
+    case landscape
+}
+
+enum LandscapePreset: String, CaseIterable, Identifiable {
+    case adaptive
+    case duo
+    case quad
+    case focus
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .adaptive: return "Adaptativo"
+        case .duo: return "Duo"
+        case .quad: return "Quad"
+        case .focus: return "Focus"
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .adaptive: return "rectangle.grid.1x2"
+        case .duo: return "rectangle.split.2x1"
+        case .quad: return "square.grid.2x2"
+        case .focus: return "rectangle.inset.filled"
+        }
+    }
+}
+
 enum ModuleCategory: String, CaseIterable, Identifiable {
     case essentials
     case productivity
@@ -235,6 +267,8 @@ struct DashboardItem: Identifiable, Codable, Equatable {
     var title: String
     var text: String
     var position: GridPosition?
+    var landscapePosition: GridPosition?
+    var landscapeSize: ModuleSize?
 
     init(
         id: UUID = UUID(),
@@ -243,7 +277,9 @@ struct DashboardItem: Identifiable, Codable, Equatable {
         style: ModuleStyle = .glass,
         title: String = "",
         text: String = "",
-        position: GridPosition? = nil
+        position: GridPosition? = nil,
+        landscapePosition: GridPosition? = nil,
+        landscapeSize: ModuleSize? = nil
     ) {
         self.id = id
         self.kind = kind
@@ -252,6 +288,33 @@ struct DashboardItem: Identifiable, Codable, Equatable {
         self.title = title
         self.text = text
         self.position = position
+        self.landscapePosition = landscapePosition
+        self.landscapeSize = landscapeSize
+    }
+
+    func size(for orientation: CanvasOrientation) -> ModuleSize {
+        switch orientation {
+        case .portrait:
+            return size
+        case .landscape:
+            return landscapeSize ?? size
+        }
+    }
+
+    func position(for orientation: CanvasOrientation) -> GridPosition? {
+        switch orientation {
+        case .portrait:
+            return position
+        case .landscape:
+            return landscapePosition
+        }
+    }
+
+    func rendered(for orientation: CanvasOrientation) -> DashboardItem {
+        var copy = self
+        copy.size = size(for: orientation)
+        copy.position = position(for: orientation)
+        return copy
     }
 }
 
