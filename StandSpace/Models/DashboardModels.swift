@@ -47,7 +47,7 @@ struct StandSpaceProfile: Identifiable, Codable, Equatable {
     }
 }
 
-enum LandscapePage: String, CaseIterable, Identifiable {
+enum LandscapePage: String, CaseIterable, Identifiable, Hashable {
     case dashboard
     case clock
     case focus
