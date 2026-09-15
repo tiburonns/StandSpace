@@ -50,6 +50,8 @@ struct StandSpaceProfile: Identifiable, Codable, Equatable {
 enum LandscapePage: String, CaseIterable, Identifiable, Hashable {
     case dashboard
     case clock
+    case photos
+    case music
     case focus
 
     var id: String { rawValue }
@@ -58,6 +60,8 @@ enum LandscapePage: String, CaseIterable, Identifiable, Hashable {
         switch self {
         case .dashboard: return "Panel"
         case .clock: return "Reloj"
+        case .photos: return "Fotos"
+        case .music: return "Música"
         case .focus: return "Focus"
         }
     }
@@ -66,6 +70,8 @@ enum LandscapePage: String, CaseIterable, Identifiable, Hashable {
         switch self {
         case .dashboard: return "square.grid.2x2"
         case .clock: return "clock"
+        case .photos: return "photo"
+        case .music: return "music.note"
         case .focus: return "timer"
         }
     }
