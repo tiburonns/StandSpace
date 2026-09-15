@@ -1,6 +1,76 @@
 import Foundation
 import SwiftUI
 
+enum StandSpaceKind: String, Codable, CaseIterable, Identifiable {
+    case desk
+    case night
+    case work
+    case kitchen
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .desk: return "Escritorio"
+        case .night: return "Noche"
+        case .work: return "Trabajo"
+        case .kitchen: return "Cocina"
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .desk: return "desktopcomputer"
+        case .night: return "moon.stars"
+        case .work: return "briefcase"
+        case .kitchen: return "fork.knife"
+        }
+    }
+}
+
+struct StandSpaceProfile: Identifiable, Codable, Equatable {
+    var id: UUID
+    var kind: StandSpaceKind
+    var items: [DashboardItem]
+    var backgroundStyle: BoardBackgroundStyle
+
+    init(
+        id: UUID = UUID(),
+        kind: StandSpaceKind,
+        items: [DashboardItem],
+        backgroundStyle: BoardBackgroundStyle
+    ) {
+        self.id = id
+        self.kind = kind
+        self.items = items
+        self.backgroundStyle = backgroundStyle
+    }
+}
+
+enum LandscapePage: String, CaseIterable, Identifiable {
+    case dashboard
+    case clock
+    case focus
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .dashboard: return "Panel"
+        case .clock: return "Reloj"
+        case .focus: return "Focus"
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .dashboard: return "square.grid.2x2"
+        case .clock: return "clock"
+        case .focus: return "timer"
+        }
+    }
+}
+
 enum CanvasOrientation: String {
     case portrait
     case landscape
