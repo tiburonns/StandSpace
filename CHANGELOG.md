@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.4.0 — Spaces, swipe pages & OLED care
+
+- Added four persistent Spaces: Desk, Night, Work, and Kitchen.
+- Existing dashboards migrate into the Desk Space instead of being discarded.
+- Each Space keeps its own modules, background, portrait layout, and landscape layout.
+- Added a landscape page carousel: Dashboard, Clock, Photos, Music, and Focus.
+- Added a persistent user-selected photo page using PhotosPicker.
+- Added an Apple Music page with artwork, now-playing metadata, and basic transport controls when media-library access is granted.
+- Added auto-dim after inactivity, with a shorter delay in Night Space.
+- Added subtle OLED pixel shifting that moves the interface by only a few points over time.
+- Added quick Space switching in the main toolbar and landscape controls.
+- Added Auto-dim and OLED Protection toggles to Settings.
+- Added independent portrait and landscape module-size editing.
+
+
 ## 0.3.1 — Landscape StandBy
 
 - Added a first-class landscape mode with 6, 8, or 10 adaptive grid columns.
