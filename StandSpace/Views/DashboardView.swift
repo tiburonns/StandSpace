@@ -320,6 +320,16 @@ struct DashboardView: View {
             )
             .tag(LandscapePage.clock)
 
+            StandbyPhotoPage(
+                controlsVisible: controlsVisible
+            )
+            .tag(LandscapePage.photos)
+
+            StandbyMusicPage(
+                controlsVisible: controlsVisible
+            )
+            .tag(LandscapePage.music)
+
             landscapeFocusPage(
                 geometry: geometry
             )
