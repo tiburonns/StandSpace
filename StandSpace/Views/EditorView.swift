@@ -7,14 +7,46 @@ struct EditorView: View {
     var body: some View {
         NavigationStack {
             List {
-                Section("Experiencia") {
-                    Toggle("Mantener pantalla encendida", isOn: $store.keepScreenAwake)
+                Section("Space") {
+                    Picker("Space activo", selection: activeSpaceBinding) {
+                        ForEach(store.spaces) { space in
+                            Label(
+                                space.kind.title,
+                                systemImage: space.kind.icon
+                            )
+                            .tag(space.id)
+                        }
+                    }
+                }
 
-                    Picker("Fondo", selection: $store.backgroundStyle) {
+                Section("Experiencia") {
+                    Toggle(
+                        "Mantener pantalla encendida",
+                        isOn: $store.keepScreenAwake
+                    )
+
+                    Toggle(
+                        "Auto-dim",
+                        isOn: $store.autoDimEnabled
+                    )
+
+                    Toggle(
+                        "Protección OLED",
+                        isOn: $store.oledProtectionEnabled
+                    )
+
+                    Picker(
+                        "Fondo",
+                        selection: $store.backgroundStyle
+                    ) {
                         ForEach(BoardBackgroundStyle.allCases) { style in
                             Text(style.title).tag(style)
                         }
                     }
+
+                    Text("Auto-dim atenúa la interfaz después de un periodo sin interacción. Protección OLED desplaza el contenido unos píxeles periódicamente para reducir elementos estáticos.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
                 }
 
                 Section("Módulos") {
@@ -39,14 +71,14 @@ struct EditorView: View {
                 }
 
                 Section("StandSpace") {
-                    LabeledContent("Versión", value: "0.2")
+                    LabeledContent("Versión", value: "0.4.0")
                     Text("StandSpace es gratuito. La meta del proyecto es ofrecer toda la experiencia principal sin paywalls ni módulos Pro.")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
 
                 Section {
-                    Button("Restablecer tablero", role: .destructive) {
+                    Button("Restablecer todos los Spaces", role: .destructive) {
                         store.reset()
                     }
                 }
@@ -62,6 +94,17 @@ struct EditorView: View {
             }
         }
     }
+
+    private var activeSpaceBinding: Binding<UUID> {
+        return Binding(
+            get: {
+                store.selectedSpaceID
+            },
+            set: { newValue in
+                store.selectSpace(newValue)
+            }
+        )
+    }
 }
 
 struct ModuleEditorView: View {
@@ -70,7 +113,16 @@ struct ModuleEditorView: View {
     var body: some View {
         Form {
             Section("Diseño") {
-                Picker("Tamaño", selection: $item.size) {
+                Picker("Tamaño vertical", selection: $item.size) {
+                    ForEach(item.kind.supportedSizes) { size in
+                        Text(size.title).tag(size)
+                    }
+                }
+
+                Picker(
+                    "Tamaño horizontal",
+                    selection: landscapeSizeBinding
+                ) {
                     ForEach(item.kind.supportedSizes) { size in
                         Text(size.title).tag(size)
                     }
@@ -100,6 +152,17 @@ struct ModuleEditorView: View {
         }
         .navigationTitle(item.kind.title)
         .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private var landscapeSizeBinding: Binding<ModuleSize> {
+        return Binding(
+            get: {
+                item.landscapeSize ?? item.size
+            },
+            set: { newValue in
+                item.landscapeSize = newValue
+            }
+        )
     }
 
     private var previewHeight: CGFloat {
