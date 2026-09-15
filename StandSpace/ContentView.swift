@@ -7,50 +7,51 @@ struct ContentView: View {
 
     @State private var lastInteraction = Date()
     @State private var isDimmed = false
+    @State private var pixelShift: CGSize = .zero
 
     private let inactivityTimer = Timer
         .publish(every: 1, on: .main, in: .common)
         .autoconnect()
 
     var body: some View {
-        TimelineView(
-            .periodic(from: Date(), by: 60)
-        ) { context in
-            let shift = oledShift(
-                for: context.date
+        ZStack {
+            store.backgroundStyle.background
+                .ignoresSafeArea()
+
+            DashboardView(
+                onInteraction: registerInteraction
+            )
+            .offset(
+                x: store.oledProtectionEnabled
+                    ? pixelShift.width
+                    : 0,
+                y: store.oledProtectionEnabled
+                    ? pixelShift.height
+                    : 0
             )
 
-            ZStack {
-                store.backgroundStyle.background
-                    .ignoresSafeArea()
-
-                DashboardView(
-                    onInteraction: registerInteraction
-                )
-                .offset(
-                    x: store.oledProtectionEnabled
-                        ? shift.width
-                        : 0,
-                    y: store.oledProtectionEnabled
-                        ? shift.height
+            Color.black
+                .opacity(
+                    isDimmed
+                        ? dimOpacity
                         : 0
                 )
-
-                Color.black
-                    .opacity(
-                        isDimmed
-                            ? dimOpacity
-                            : 0
-                    )
-                    .ignoresSafeArea()
-                    .allowsHitTesting(false)
-                    .animation(
-                        .easeInOut(duration: 0.8),
-                        value: isDimmed
-                    )
-            }
+                .ignoresSafeArea()
+                .allowsHitTesting(false)
+                .animation(
+                    .easeInOut(duration: 0.8),
+                    value: isDimmed
+                )
         }
         .onReceive(inactivityTimer) { now in
+            if store.oledProtectionEnabled {
+                pixelShift = oledShift(
+                    for: now
+                )
+            } else if pixelShift != .zero {
+                pixelShift = .zero
+            }
+
             guard store.autoDimEnabled else {
                 if isDimmed {
                     isDimmed = false
@@ -69,6 +70,9 @@ struct ContentView: View {
                 .isIdleTimerDisabled =
                 store.keepScreenAwake
 
+            pixelShift = oledShift(
+                for: Date()
+            )
             registerInteraction()
         }
         .onChange(
@@ -85,6 +89,13 @@ struct ContentView: View {
             } else {
                 registerInteraction()
             }
+        }
+        .onChange(
+            of: store.oledProtectionEnabled
+        ) { _, enabled in
+            pixelShift = enabled
+                ? oledShift(for: Date())
+                : .zero
         }
         .onChange(
             of: store.selectedSpaceID
@@ -146,7 +157,9 @@ struct ContentView: View {
             CGSize(width: 1.5, height: -1.5)
         ]
 
-        let step = (minute / 2) % pattern.count
+        let step =
+            (minute / 2) % pattern.count
+
         return pattern[step]
     }
 }
