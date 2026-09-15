@@ -22,6 +22,8 @@
     <string>StandSpace usa tu calendario para mostrar tu próximo evento en el módulo Calendario.</string>
     <key>NSCalendarsUsageDescription</key>
     <string>StandSpace usa tu calendario para mostrar tu próximo evento en el módulo Calendario.</string>
+    <key>NSAppleMusicUsageDescription</key>
+    <string>StandSpace usa tu biblioteca musical para mostrar la canción actual y ofrecer controles básicos en la página Música.</string>
     <key>UILaunchScreen</key>
     <dict/>
     <key>UISupportedInterfaceOrientations</key>
