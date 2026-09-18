@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased — reliability & efficiency
+
+- Added a privacy manifest for UserDefaults and user-visible disk-space reporting.
+- Timer modules now persist their state and derive remaining time from an absolute end date, so suspension or SwiftUI view recreation no longer loses elapsed time.
+- Space persistence now uses a versioned schema with automatic migration from the previous v1 payload.
+- The Music page reacts to playback notifications and uses a lower-frequency polling fallback.
+- Selected StandBy photos are downsampled during decoding to reduce peak memory use.
+
 ## 0.4.0 — Spaces, swipe pages & OLED care
 
 - Added four persistent Spaces: Desk, Night, Work, and Kitchen.
