@@ -4,7 +4,7 @@
 
 StandSpace is a free, customizable modular dashboard for iPhone and iPad. It takes the glanceable idea behind a standby display and turns it into a flexible canvas: users decide what is visible, how large it is, how it looks, and how the space is arranged.
 
-> Current milestone: **0.2 — Canvas foundations**
+> Current milestone: **0.4.0 — Spaces, swipe pages & OLED care**
 
 ## Product principles
 
@@ -25,29 +25,17 @@ StandSpace is a free, customizable modular dashboard for iPhone and iPad. It tak
 - Visual module gallery with search, categories, preview, size, and style selection.
 - Eight grid spans from 1×1 through 4×2, filtered per module.
 - Adaptive 4-, 6-, and 8-column canvas behavior based on available width.
-- Clock, date, device battery, and custom text modules.
+- Clock, date, device battery, custom text, Timer, Calendar, Storage, Device Info, and Day Progress modules.
+- Persistent Spaces for Desk, Night, Work, and Kitchen, each with independent modules, backgrounds, portrait layout, and landscape layout.
+- First-class landscape StandBy experience with Dashboard, Clock, Photos, Music, and Focus swipe pages.
+- User-selected photo display and an Apple Music page with artwork, now-playing metadata, and basic transport controls when access is granted.
 - Glass, minimal, solid, outline, gradient, and tinted module styles.
 - Black, Midnight, Night Red, OLED, Aurora, and Warm backgrounds.
-- Local persistence and optional keep-screen-awake behavior.
-- Compatibility path for dashboards saved by the 0.1 prototype.
+- Auto-dim and subtle OLED pixel shifting options.
+- Local persistence, independent portrait/landscape module sizing, and optional keep-screen-awake behavior.
+- Compatibility and migration paths for dashboards saved by earlier StandSpace versions.
 
-## Next milestones
-
-### 0.3 — Module engine + first useful pack
-
-- Formal module/provider protocol so modules can be added without growing a giant switch statement.
-- Weather.
-- Calendar / next event.
-- Reminders.
-- Media / Now Playing where platform APIs allow it.
-- Photos.
-- Timer / Pomodoro.
-
-### 0.4 — Spaces and themes
-
-- Multiple saved Spaces such as Desk, Night, Kitchen, Work, and Car.
-- Full theme engine: typography, spacing, corner radius, accent, module material, and background.
-- OLED protection options such as subtle pixel shifting and low-light presets.
+## Next milestone
 
 ### 0.5 — Apple ecosystem integration
 
@@ -56,6 +44,7 @@ StandSpace is a free, customizable modular dashboard for iPhone and iPad. It tak
 - Live Activities for temporary ongoing modules.
 - iCloud sync for Spaces and preferences.
 - Import/export of shareable StandSpace layouts.
+- Continue expanding the module-provider architecture and hardening persistence/migrations.
 
 See CHANGELOG.md for the current release notes.
 
@@ -82,7 +71,7 @@ See CHANGELOG.md for the current release notes.
 
 StandSpace es un dashboard modular gratuito y personalizable para iPhone y iPad. Toma la idea de una pantalla de consulta rápida y la convierte en un lienzo flexible: el usuario decide qué se muestra, cuánto espacio ocupa, cómo se ve y cómo se organiza.
 
-> Hito actual: **0.2 — Bases del Canvas**
+> Hito actual: **0.4.0 — Spaces, páginas deslizables y cuidado OLED**
 
 ## Principios del producto
 
@@ -103,14 +92,18 @@ StandSpace es un dashboard modular gratuito y personalizable para iPhone y iPad.
 - Galería visual con búsqueda, categorías, vista previa, tamaño y estilo.
 - Ocho tamaños de cuadrícula desde 1×1 hasta 4×2, según lo que admita cada módulo.
 - Canvas adaptativo de 4, 6 u 8 columnas según el ancho disponible.
-- Reloj, fecha, batería del dispositivo y texto personalizado.
+- Reloj, fecha, batería del dispositivo, texto personalizado, Temporizador, Calendario, Almacenamiento, Información del dispositivo y Progreso del día.
+- Spaces persistentes para Escritorio, Noche, Trabajo y Cocina, cada uno con módulos, fondo y distribuciones independientes en vertical y horizontal.
+- Experiencia StandBy horizontal con páginas deslizables de Dashboard, Reloj, Fotos, Música y Focus.
+- Página de foto elegida por el usuario y página de Apple Music con portada, información de reproducción y controles básicos cuando se concede acceso.
 - Estilos cristal, minimalista, sólido, contorno, gradiente y tinte.
 - Fondos Negro, Medianoche, Rojo nocturno, OLED, Aurora y Cálido.
-- Persistencia local y opción de mantener la pantalla encendida.
-- Compatibilidad con configuraciones guardadas por el prototipo 0.1.
+- Atenuación automática y desplazamiento sutil de píxeles para protección OLED.
+- Persistencia local, tamaños independientes por orientación y opción de mantener la pantalla encendida.
+- Compatibilidad y migración para configuraciones guardadas por versiones anteriores de StandSpace.
 
 ## Lo siguiente
 
-La versión 0.3 formalizará el **Module Engine** y comenzará el primer paquete de módulos realmente útiles: clima, calendario, recordatorios, multimedia, fotos y temporizadores. Después construiremos Spaces/perfiles, temas avanzados, App Intents, widgets, Live Activities, iCloud e importación/exportación.
+La versión 0.5 se enfocará en la integración con el ecosistema Apple: App Intents y Atajos, widgets compatibles con WidgetKit/StandBy donde sea posible, Live Activities para módulos temporales, sincronización de Spaces y preferencias mediante iCloud, e importación/exportación de diseños compartibles. También continuará la expansión de la arquitectura de módulos y el endurecimiento de persistencia y migraciones.
 
 Consulta CHANGELOG.md para ver los cambios de cada versión.
