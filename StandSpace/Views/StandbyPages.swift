@@ -1,4 +1,5 @@
 import Combine
+import ImageIO
 import MediaPlayer
 import PhotosUI
 import SwiftUI
@@ -86,20 +87,16 @@ struct StandbyPhotoPage: View {
 
             Task {
                 guard let data = try? await newItem.loadTransferable(type: Data.self),
-                      let loaded = UIImage(data: data) else {
+                      let normalized = normalizedJPEGData(from: data) else {
                     return
                 }
 
-                let normalized = normalizedJPEGData(from: loaded)
-
                 await MainActor.run {
-                    image = loaded
-                    if let normalized = normalized {
-                        try? normalized.write(
-                            to: photoURL,
-                            options: .atomic
-                        )
-                    }
+                    image = normalized.image
+                    try? normalized.data.write(
+                        to: photoURL,
+                        options: .atomic
+                    )
                 }
             }
         }
@@ -136,40 +133,38 @@ struct StandbyPhotoPage: View {
     }
 
     private func normalizedJPEGData(
-        from image: UIImage
-    ) -> Data? {
-        let maxDimension: CGFloat = 2200
-        let largest = max(
-            image.size.width,
-            image.size.height
-        )
-
-        guard largest > 0 else {
+        from data: Data
+    ) -> (image: UIImage, data: Data)? {
+        guard let source = CGImageSourceCreateWithData(
+            data as CFData,
+            nil
+        ) else {
             return nil
         }
 
-        let scale = min(1, maxDimension / largest)
-        let targetSize = CGSize(
-            width: image.size.width * scale,
-            height: image.size.height * scale
-        )
+        let options: [CFString: Any] = [
+            kCGImageSourceCreateThumbnailFromImageAlways: true,
+            kCGImageSourceCreateThumbnailWithTransform: true,
+            kCGImageSourceThumbnailMaxPixelSize: 2200,
+            kCGImageSourceShouldCacheImmediately: true
+        ]
 
-        let renderer = UIGraphicsImageRenderer(
-            size: targetSize
-        )
-
-        let resized = renderer.image { _ in
-            image.draw(
-                in: CGRect(
-                    origin: .zero,
-                    size: targetSize
-                )
-            )
+        guard let cgImage = CGImageSourceCreateThumbnailAtIndex(
+            source,
+            0,
+            options as CFDictionary
+        ) else {
+            return nil
         }
 
-        return resized.jpegData(
+        let image = UIImage(cgImage: cgImage)
+        guard let jpeg = image.jpegData(
             compressionQuality: 0.86
-        )
+        ) else {
+            return nil
+        }
+
+        return (image, jpeg)
     }
 }
 
