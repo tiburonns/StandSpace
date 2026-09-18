@@ -17,6 +17,7 @@ struct DashboardView: View {
     @State private var landscapePage: LandscapePage = .dashboard
 
     private let spacing: CGFloat = 12
+    private static let focusTimerID = UUID(uuidString: "9B52C5B4-EC0C-4B71-A9AA-3E4FDC2C8B10")!
 
     init(
         onInteraction: @escaping () -> Void = {}
@@ -416,6 +417,7 @@ struct DashboardView: View {
         HStack(spacing: 14) {
             ModuleCardView(
                 item: DashboardItem(
+                    id: Self.focusTimerID,
                     kind: .timer,
                     size: .large,
                     style: .glass
