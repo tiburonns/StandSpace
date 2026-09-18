@@ -5,10 +5,36 @@ import UIKit
 
 struct TimerModuleView: View {
     let size: ModuleSize
+    let storageID: UUID
 
-    @State private var remainingSeconds = 25 * 60
-    @State private var isRunning = false
+    @State private var remainingSeconds: Int
+    @State private var isRunning: Bool
+    @State private var endDate: Date?
+
+    private let defaultDuration = 25 * 60
     private let ticker = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+
+    init(size: ModuleSize, storageID: UUID) {
+        self.size = size
+        self.storageID = storageID
+
+        let defaults = UserDefaults.standard
+        let prefix = Self.storagePrefix(for: storageID)
+        let savedRemaining = (defaults.object(forKey: prefix + "remaining") as? NSNumber)?.intValue ?? 25 * 60
+        let savedRunning = defaults.bool(forKey: prefix + "running")
+        let savedEndDate = defaults.object(forKey: prefix + "endDate") as? Date
+
+        if savedRunning, let savedEndDate {
+            let remaining = max(0, Int(ceil(savedEndDate.timeIntervalSinceNow)))
+            _remainingSeconds = State(initialValue: remaining)
+            _isRunning = State(initialValue: remaining > 0)
+            _endDate = State(initialValue: remaining > 0 ? savedEndDate : nil)
+        } else {
+            _remainingSeconds = State(initialValue: max(0, savedRemaining))
+            _isRunning = State(initialValue: false)
+            _endDate = State(initialValue: nil)
+        }
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -31,7 +57,7 @@ struct TimerModuleView: View {
             if size != .small {
                 HStack(spacing: 10) {
                     Button {
-                        isRunning.toggle()
+                        toggleRunning()
                     } label: {
                         Image(systemName: isRunning ? "pause.fill" : "play.fill")
                             .frame(width: 30, height: 30)
@@ -39,8 +65,7 @@ struct TimerModuleView: View {
                     .buttonStyle(.bordered)
 
                     Button {
-                        isRunning = false
-                        remainingSeconds = 25 * 60
+                        reset()
                     } label: {
                         Image(systemName: "arrow.counterclockwise")
                             .frame(width: 30, height: 30)
@@ -50,13 +75,12 @@ struct TimerModuleView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+        .onAppear {
+            synchronizeWithClock()
+        }
         .onReceive(ticker) { _ in
             guard isRunning else { return }
-            if remainingSeconds > 0 {
-                remainingSeconds -= 1
-            } else {
-                isRunning = false
-            }
+            synchronizeWithClock()
         }
     }
 
@@ -64,6 +88,54 @@ struct TimerModuleView: View {
         let minutes = remainingSeconds / 60
         let seconds = remainingSeconds % 60
         return String(format: "%02d:%02d", minutes, seconds)
+    }
+
+    private func toggleRunning() {
+        if isRunning {
+            synchronizeWithClock()
+            isRunning = false
+            endDate = nil
+        } else {
+            if remainingSeconds <= 0 {
+                remainingSeconds = defaultDuration
+            }
+            isRunning = true
+            endDate = Date().addingTimeInterval(TimeInterval(remainingSeconds))
+        }
+        persist()
+    }
+
+    private func reset() {
+        isRunning = false
+        endDate = nil
+        remainingSeconds = defaultDuration
+        persist()
+    }
+
+    private func synchronizeWithClock() {
+        guard isRunning, let endDate else { return }
+        remainingSeconds = max(0, Int(ceil(endDate.timeIntervalSinceNow)))
+        if remainingSeconds == 0 {
+            isRunning = false
+            self.endDate = nil
+            persist()
+        }
+    }
+
+    private func persist() {
+        let defaults = UserDefaults.standard
+        let prefix = Self.storagePrefix(for: storageID)
+        defaults.set(remainingSeconds, forKey: prefix + "remaining")
+        defaults.set(isRunning, forKey: prefix + "running")
+        if let endDate {
+            defaults.set(endDate, forKey: prefix + "endDate")
+        } else {
+            defaults.removeObject(forKey: prefix + "endDate")
+        }
+    }
+
+    private static func storagePrefix(for id: UUID) -> String {
+        "standspace.timer.\(id.uuidString)."
     }
 }
 
