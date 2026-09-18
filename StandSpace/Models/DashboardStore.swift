@@ -1,5 +1,12 @@
 import SwiftUI
 
+private struct DashboardStoreEnvelope: Codable {
+    static let currentSchemaVersion = 2
+
+    var schemaVersion: Int = currentSchemaVersion
+    var spaces: [StandSpaceProfile]
+}
+
 @MainActor
 final class DashboardStore: ObservableObject {
     @Published var items: [DashboardItem] {
@@ -54,7 +61,8 @@ final class DashboardStore: ObservableObject {
         static let legacyItems = "dashboard.items.v1"
         static let legacyBackground = "dashboard.background"
         static let keepAwake = "dashboard.keepAwake"
-        static let spaces = "dashboard.spaces.v1"
+        static let legacySpaces = "dashboard.spaces.v1"
+        static let spaces = "dashboard.spaces.v2"
         static let selectedSpace = "dashboard.selectedSpace.v1"
         static let autoDim = "dashboard.autoDim"
         static let oledProtection = "dashboard.oledProtection"
@@ -82,12 +90,20 @@ final class DashboardStore: ObservableObject {
 
         let loadedSpaces: [StandSpaceProfile]
         if let data = defaults.data(forKey: Keys.spaces),
-           let decoded = try? JSONDecoder().decode(
-               [StandSpaceProfile].self,
+           let envelope = try? JSONDecoder().decode(
+               DashboardStoreEnvelope.self,
                from: data
            ),
-           !decoded.isEmpty {
-            loadedSpaces = decoded
+           envelope.schemaVersion <= DashboardStoreEnvelope.currentSchemaVersion,
+           !envelope.spaces.isEmpty {
+            loadedSpaces = envelope.spaces.map(Self.repairProfile)
+        } else if let data = defaults.data(forKey: Keys.legacySpaces),
+                  let decoded = try? JSONDecoder().decode(
+                      [StandSpaceProfile].self,
+                      from: data
+                  ),
+                  !decoded.isEmpty {
+            loadedSpaces = decoded.map(Self.repairProfile)
         } else {
             loadedSpaces = Self.makeDefaultSpaces(
                 deskItems: legacyItems,
@@ -460,8 +476,12 @@ final class DashboardStore: ObservableObject {
     }
 
     private func saveSpaces() {
+        let envelope = DashboardStoreEnvelope(
+            spaces: spaces.map(Self.repairProfile)
+        )
+
         guard let data = try? JSONEncoder().encode(
-            spaces
+            envelope
         ) else {
             return
         }
@@ -470,6 +490,14 @@ final class DashboardStore: ObservableObject {
             data,
             forKey: Keys.spaces
         )
+    }
+
+    private static func repairProfile(
+        _ profile: StandSpaceProfile
+    ) -> StandSpaceProfile {
+        var repaired = profile
+        repaired.items = profile.items.map(repairIfNeeded)
+        return repaired
     }
 
     private static func repairIfNeeded(
