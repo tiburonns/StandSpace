@@ -188,7 +188,7 @@ struct StandbyMusicPage: View {
 
     private let refreshTimer = Timer
         .publish(
-            every: 1,
+            every: 10,
             on: .main,
             in: .common
         )
@@ -224,8 +224,30 @@ struct StandbyMusicPage: View {
         }
         .onAppear {
             if authorization == .authorized {
+                player.beginGeneratingPlaybackNotifications()
                 refreshNowPlaying()
             }
+        }
+        .onDisappear {
+            player.endGeneratingPlaybackNotifications()
+        }
+        .onReceive(
+            NotificationCenter.default.publisher(
+                for: .MPMusicPlayerControllerNowPlayingItemDidChange,
+                object: player
+            )
+        ) { _ in
+            guard authorization == .authorized else { return }
+            refreshNowPlaying()
+        }
+        .onReceive(
+            NotificationCenter.default.publisher(
+                for: .MPMusicPlayerControllerPlaybackStateDidChange,
+                object: player
+            )
+        ) { _ in
+            guard authorization == .authorized else { return }
+            refreshNowPlaying()
         }
         .onReceive(refreshTimer) { _ in
             guard authorization == .authorized else {
@@ -347,6 +369,7 @@ struct StandbyMusicPage: View {
                 authorization = status
 
                 if status == .authorized {
+                    player.beginGeneratingPlaybackNotifications()
                     refreshNowPlaying()
                 }
             }
