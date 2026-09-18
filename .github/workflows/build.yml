@@ -10,8 +10,11 @@ jobs:
     runs-on: macos-15
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
-      - name: Validate privacy manifest
-        run: plutil -lint StandSpace/PrivacyInfo.xcprivacy
+      - name: Validate release and privacy contract
+        run: |
+          plutil -lint StandSpace/PrivacyInfo.xcprivacy
+          plutil -lint StandSpace/Info.plist
+          python3 Tests/validate-release-contract.py
       - name: Run layout tests
         run: zsh Tests/run-layout-tests.sh
       - name: Build StandSpace
