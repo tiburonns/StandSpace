@@ -21,6 +21,7 @@
 		A1000000000000000000000C /* TextModuleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000C /* TextModuleView.swift */; };
 		A1000000000000000000000D /* AdditionalModules.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000F /* AdditionalModules.swift */; };
 		A1000000000000000000000E /* StandbyPages.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000010 /* StandbyPages.swift */; };
+		A1000000000000000000000F /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000011 /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +41,7 @@
 		A2000000000000000000000E /* StandSpace.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StandSpace.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A2000000000000000000000F /* AdditionalModules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdditionalModules.swift; sourceTree = "<group>"; };
 		A20000000000000000000010 /* StandbyPages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandbyPages.swift; sourceTree = "<group>"; };
+		A20000000000000000000011 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +49,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1000000000000000000000F /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,6 +74,7 @@
 				A40000000000000000000005 /* Modules */,
 				A40000000000000000000006 /* Shared */,
 				A2000000000000000000000D /* Info.plist */,
+				A20000000000000000000011 /* PrivacyInfo.xcprivacy */,
 			);
 			path = StandSpace;
 			sourceTree = "<group>";
