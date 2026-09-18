@@ -24,7 +24,7 @@ struct ModuleCardView: View {
         case .battery:
             BatteryModuleView(size: item.size)
         case .timer:
-            TimerModuleView(size: item.size)
+            TimerModuleView(size: item.size, storageID: item.id)
         case .calendar:
             CalendarModuleView(size: item.size)
         case .storage:
