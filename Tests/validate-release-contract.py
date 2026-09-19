@@ -42,6 +42,37 @@ for localized_file in [
     if not localized_file.exists():
         raise SystemExit(f"localization contract failed: missing {localized_file}")
 
+localization_sources = {
+    "EditorView.swift": (ROOT / "StandSpace/Views/EditorView.swift").read_text(encoding="utf-8"),
+    "DashboardView.swift": (ROOT / "StandSpace/Views/DashboardView.swift").read_text(encoding="utf-8"),
+    "StandbyPages.swift": (ROOT / "StandSpace/Views/StandbyPages.swift").read_text(encoding="utf-8"),
+}
+forbidden_localization_regressions = {
+    "EditorView.swift": [
+        'Section("Diseño")',
+        '.navigationTitle("Agregar módulo")',
+        'Button("Cerrar")',
+    ],
+    "DashboardView.swift": [
+        'Text("Editar StandSpace")',
+        'Text("Listo")',
+        '"Diseño horizontal"',
+    ],
+    "StandbyPages.swift": [
+        'Text("Fotos")',
+        'Button("Permitir acceso")',
+        '@State private var title = "Música"',
+        '@State private var artist = "Nada reproduciéndose"',
+    ],
+}
+for filename, fragments in forbidden_localization_regressions.items():
+    source = localization_sources[filename]
+    for fragment in fragments:
+        if fragment in source:
+            raise SystemExit(
+                f"localization contract failed: {filename} regressed to a hardcoded user-facing string: {fragment}"
+            )
+
 with (ROOT / "StandSpace/PrivacyInfo.xcprivacy").open("rb") as handle:
     privacy = plistlib.load(handle)
 
