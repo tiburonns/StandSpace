@@ -3,7 +3,7 @@ import SwiftUI
 @main
 struct StandSpaceApp: App {
     @StateObject private var store = DashboardStore()
-    @AppStorage("standspace.app.language")
+    @AppStorage(StandSpaceAppLanguage.storageKey)
     private var languageRawValue = StandSpaceAppLanguage.system.rawValue
 
     private var language: StandSpaceAppLanguage {
