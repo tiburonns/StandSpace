@@ -16,6 +16,11 @@ struct DashboardView: View {
     @State private var feedbackTick = 0
     @State private var landscapePage: LandscapePage = .dashboard
 
+    private var language: StandSpaceAppLanguage { .current }
+    private func t(_ english: String, _ spanish: String) -> String {
+        language.text(english: english, spanish: spanish)
+    }
+
     private let spacing: CGFloat = 12
     private static let focusTimerID = UUID(uuidString: "9B52C5B4-EC0C-4B71-A9AA-3E4FDC2C8B10")!
 
@@ -208,7 +213,7 @@ struct DashboardView: View {
                             placement:
                                 .confirmationAction
                         ) {
-                            Button("Listo") {
+                            Button(t("Done", "Listo")) {
                                 inspectorID = nil
                                 onInteraction()
                             }
@@ -798,7 +803,7 @@ struct DashboardView: View {
                         Image(systemName: "plus")
                     } else {
                         Label(
-                            "Agregar",
+                            t("Add", "Agregar"),
                             systemImage: "plus"
                         )
                     }
@@ -843,7 +848,7 @@ struct DashboardView: View {
                         )
                     )
                     .accessibilityLabel(
-                        "Diseño horizontal"
+                        t("Landscape layout", "Diseño horizontal")
                     )
                 }
 
@@ -854,7 +859,7 @@ struct DashboardView: View {
                 Spacer()
 
                 if !isLandscape {
-                    Text("Editar StandSpace")
+                    Text(t("Edit StandSpace", "Editar StandSpace"))
                         .font(.headline)
                         .foregroundStyle(
                             .secondary
@@ -884,7 +889,7 @@ struct DashboardView: View {
                                 "checkmark"
                         )
                     } else {
-                        Text("Listo")
+                        Text(t("Done", "Listo"))
                             .fontWeight(
                                 .semibold
                             )
@@ -924,7 +929,7 @@ struct DashboardView: View {
                         )
                     )
                     .accessibilityLabel(
-                        "Alternar modo noche"
+                        t("Toggle night mode", "Alternar modo noche")
                     )
                 }
 
@@ -960,7 +965,7 @@ struct DashboardView: View {
                         )
                     } else {
                         Label(
-                            "Editar",
+                            t("Edit", "Editar"),
                             systemImage:
                                 "square.grid.2x2"
                         )
@@ -1029,7 +1034,7 @@ struct DashboardView: View {
     ) -> some View {
         Menu {
             Picker(
-                "Fondo",
+                t("Background", "Fondo"),
                 selection:
                     $store.backgroundStyle
             ) {
@@ -1050,7 +1055,7 @@ struct DashboardView: View {
                 onInteraction()
             } label: {
                 Label(
-                    "Modo noche",
+                    t("Night mode", "Modo noche"),
                     systemImage:
                         "moon.stars"
                 )
@@ -1061,7 +1066,7 @@ struct DashboardView: View {
                 onInteraction()
             } label: {
                 Label(
-                    "OLED negro",
+                    t("OLED black", "OLED negro"),
                     systemImage:
                         "circle.fill"
                 )
@@ -1074,7 +1079,7 @@ struct DashboardView: View {
                 )
             } else {
                 Label(
-                    "Tema",
+                    t("Theme", "Tema"),
                     systemImage:
                         "paintpalette"
                 )
