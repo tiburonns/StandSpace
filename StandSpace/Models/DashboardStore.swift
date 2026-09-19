@@ -55,7 +55,10 @@ final class DashboardStore: ObservableObject {
         }
     }
 
+    @Published private(set) var persistenceWarning: String?
+
     private var isApplyingSpace = false
+    private var blocksSpacePersistence = false
 
     private enum Keys {
         static let legacyItems = "dashboard.items.v1"
@@ -89,14 +92,35 @@ final class DashboardStore: ObservableObject {
             ?? .midnight
 
         let loadedSpaces: [StandSpaceProfile]
+        var detectedNewerSchema = false
+
         if let data = defaults.data(forKey: Keys.spaces),
            let envelope = try? JSONDecoder().decode(
                DashboardStoreEnvelope.self,
                from: data
-           ),
-           envelope.schemaVersion <= DashboardStoreEnvelope.currentSchemaVersion,
-           !envelope.spaces.isEmpty {
-            loadedSpaces = envelope.spaces.map(Self.repairProfile)
+           ) {
+            if envelope.schemaVersion
+                <= DashboardStoreEnvelope.currentSchemaVersion,
+               !envelope.spaces.isEmpty {
+                loadedSpaces = envelope.spaces.map(
+                    Self.repairProfile
+                )
+            } else if envelope.schemaVersion
+                        > DashboardStoreEnvelope
+                            .currentSchemaVersion {
+                // Never overwrite data created by a newer StandSpace schema
+                // from an older build.
+                detectedNewerSchema = true
+                loadedSpaces = Self.makeDefaultSpaces(
+                    deskItems: legacyItems,
+                    deskBackground: legacyBackground
+                )
+            } else {
+                loadedSpaces = Self.makeDefaultSpaces(
+                    deskItems: legacyItems,
+                    deskBackground: legacyBackground
+                )
+            }
         } else if let data = defaults.data(forKey: Keys.legacySpaces),
                   let decoded = try? JSONDecoder().decode(
                       [StandSpaceProfile].self,
@@ -145,6 +169,13 @@ final class DashboardStore: ObservableObject {
             defaults.object(forKey: Keys.oledProtection) == nil
             ? true
             : defaults.bool(forKey: Keys.oledProtection)
+
+        self.blocksSpacePersistence =
+            detectedNewerSchema
+        self.persistenceWarning =
+            detectedNewerSchema
+            ? "Se detectó una configuración creada por una versión más nueva. Esta versión no la sobrescribirá; actualiza StandSpace o restablece los Spaces explícitamente."
+            : nil
     }
 
     var activeSpace: StandSpaceProfile {
@@ -439,6 +470,11 @@ final class DashboardStore: ObservableObject {
     }
 
     func reset() {
+        // Reset is an explicit destructive action, so it is the one operation
+        // allowed to replace data from a newer unsupported schema.
+        blocksSpacePersistence = false
+        persistenceWarning = nil
+
         let fresh = Self.makeDefaultSpaces(
             deskItems: Self.deskItems,
             deskBackground: .midnight
@@ -476,6 +512,10 @@ final class DashboardStore: ObservableObject {
     }
 
     private func saveSpaces() {
+        guard !blocksSpacePersistence else {
+            return
+        }
+
         let envelope = DashboardStoreEnvelope(
             spaces: spaces.map(Self.repairProfile)
         )
