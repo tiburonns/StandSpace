@@ -21,11 +21,16 @@ enum StandSpaceAppLanguage: String, CaseIterable, Identifiable {
     var optionTitle: String {
         switch self {
         case .system:
-            return "Sistema"
+            return text(english: "System", spanish: "Sistema")
         case .english:
             return "English"
         case .spanish:
             return "Español"
         }
+    }
+
+    func text(english: String, spanish: String) -> String {
+        let languageCode = locale.language.languageCode?.identifier.lowercased()
+        return languageCode == "es" ? spanish : english
     }
 }
