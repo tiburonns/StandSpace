@@ -7,6 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 project = (ROOT / "StandSpace.xcodeproj/project.pbxproj").read_text(encoding="utf-8")
 readme = (ROOT / "README.md").read_text(encoding="utf-8")
 changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+app_language = (ROOT / "StandSpace/Shared/AppLanguage.swift").read_text(encoding="utf-8")
 
 versions = set(re.findall(r"MARKETING_VERSION = ([0-9.]+);", project))
 builds = set(re.findall(r"CURRENT_PROJECT_VERSION = ([0-9]+);", project))
@@ -22,6 +23,24 @@ if f"> `main` actual: **{version} (build {build})**" not in readme:
     raise SystemExit("version contract failed: Spanish README status is stale")
 if f"## {version} (development)" not in changelog:
     raise SystemExit("version contract failed: changelog development version is stale")
+
+for required_region in ["en", "es"]:
+    if f"\t\t\t\t{required_region}," not in project:
+        raise SystemExit(f"localization contract failed: missing {required_region} project region")
+
+if "InfoPlist.strings in Resources" not in project:
+    raise SystemExit("localization contract failed: InfoPlist.strings is not bundled")
+if "AppLanguage.swift in Sources" not in project:
+    raise SystemExit("localization contract failed: AppLanguage.swift is not compiled")
+for language_case in ["case system", "case english", "case spanish"]:
+    if language_case not in app_language:
+        raise SystemExit(f"localization contract failed: missing {language_case}")
+for localized_file in [
+    ROOT / "StandSpace/en.lproj/InfoPlist.strings",
+    ROOT / "StandSpace/es.lproj/InfoPlist.strings",
+]:
+    if not localized_file.exists():
+        raise SystemExit(f"localization contract failed: missing {localized_file}")
 
 with (ROOT / "StandSpace/PrivacyInfo.xcprivacy").open("rb") as handle:
     privacy = plistlib.load(handle)
