@@ -3,10 +3,24 @@ import SwiftUI
 struct EditorView: View {
     @EnvironmentObject private var store: DashboardStore
     @Environment(\.dismiss) private var dismiss
+    @AppStorage("standspace.app.language")
+    private var languageRawValue = StandSpaceAppLanguage.system.rawValue
 
     var body: some View {
         NavigationStack {
             List {
+                Section(t("Language", "Idioma")) {
+                    Picker(
+                        t("App language", "Idioma de la app"),
+                        selection: $languageRawValue
+                    ) {
+                        ForEach(StandSpaceAppLanguage.allCases) { language in
+                            Text(language.optionTitle)
+                                .tag(language.rawValue)
+                        }
+                    }
+                }
+
                 if let warning =
                     store.persistenceWarning {
                     Section {
@@ -19,8 +33,8 @@ struct EditorView: View {
                     }
                 }
 
-                Section("Space") {
-                    Picker("Space activo", selection: activeSpaceBinding) {
+                Section(t("Space", "Space")) {
+                    Picker(t("Active space", "Space activo"), selection: activeSpaceBinding) {
                         ForEach(store.spaces) { space in
                             Label(
                                 space.kind.title,
@@ -31,9 +45,9 @@ struct EditorView: View {
                     }
                 }
 
-                Section("Experiencia") {
+                Section(t("Experience", "Experiencia")) {
                     Toggle(
-                        "Mantener pantalla encendida",
+                        t("Keep screen awake", "Mantener pantalla encendida"),
                         isOn: $store.keepScreenAwake
                     )
 
@@ -43,12 +57,12 @@ struct EditorView: View {
                     )
 
                     Toggle(
-                        "Protección OLED",
+                        t("OLED protection", "Protección OLED"),
                         isOn: $store.oledProtectionEnabled
                     )
 
                     Picker(
-                        "Fondo",
+                        t("Background", "Fondo"),
                         selection: $store.backgroundStyle
                     ) {
                         ForEach(BoardBackgroundStyle.allCases) { style in
@@ -56,12 +70,12 @@ struct EditorView: View {
                         }
                     }
 
-                    Text("Auto-dim atenúa la interfaz después de un periodo sin interacción. Protección OLED desplaza el contenido unos píxeles periódicamente para reducir elementos estáticos.")
+                    Text(t("Auto-dim dims the interface after a period without interaction. OLED protection shifts content by a few pixels periodically to reduce static elements.", "Auto-dim atenúa la interfaz después de un periodo sin interacción. Protección OLED desplaza el contenido unos píxeles periódicamente para reducir elementos estáticos."))
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
 
-                Section("Módulos") {
+                Section(t("Modules", "Módulos")) {
                     ForEach($store.items) { $item in
                         NavigationLink {
                             ModuleEditorView(item: $item)
@@ -84,30 +98,39 @@ struct EditorView: View {
 
                 Section("StandSpace") {
                     LabeledContent(
-                        "Versión",
+                        t("Version", "Versión"),
                         value: appVersion
                     )
-                    Text("StandSpace es gratuito. La meta del proyecto es ofrecer toda la experiencia principal sin paywalls ni módulos Pro.")
+                    Text(t("StandSpace is free. The project goal is to provide the complete core experience without paywalls or Pro-only modules.", "StandSpace es gratuito. La meta del proyecto es ofrecer toda la experiencia principal sin paywalls ni módulos Pro."))
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
 
                 Section {
-                    Button("Restablecer todos los Spaces", role: .destructive) {
+                    Button(t("Reset all Spaces", "Restablecer todos los Spaces"), role: .destructive) {
                         store.reset()
                     }
                 }
             }
-            .navigationTitle("Ajustes")
+            .navigationTitle(t("Settings", "Ajustes"))
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     EditButton()
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Listo") { dismiss() }
+                    Button(t("Done", "Listo")) { dismiss() }
                 }
             }
         }
+    }
+
+
+    private var appLanguage: StandSpaceAppLanguage {
+        StandSpaceAppLanguage(rawValue: languageRawValue) ?? .system
+    }
+
+    private func t(_ english: String, _ spanish: String) -> String {
+        appLanguage.text(english: english, spanish: spanish)
     }
 
     private var appVersion: String {
