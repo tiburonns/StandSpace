@@ -17,6 +17,8 @@ jobs:
           python3 Tests/validate-release-contract.py
       - name: Run layout tests
         run: zsh Tests/run-layout-tests.sh
+      - name: Run language tests
+        run: zsh Tests/run-language-tests.sh
       - name: Build StandSpace
         run: |
           xcodebuild \
