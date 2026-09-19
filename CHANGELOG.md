@@ -1,7 +1,8 @@
 # Changelog
 
-## 0.4.1 (development) — reliability & efficiency
+## 0.4.2 (development) — localization, reliability & efficiency
 
+- Added persistent System / English / Español language selection, localized permission descriptions, and Spanish as a declared project region.
 - Added a privacy manifest for UserDefaults and user-visible disk-space reporting.
 - Timer modules now persist their state and derive remaining time from an absolute end date, so suspension or SwiftUI view recreation no longer loses elapsed time.
 - Space persistence now uses a versioned schema with automatic migration from the previous v1 payload.
