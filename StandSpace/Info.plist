@@ -19,11 +19,11 @@
     <key>CFBundleVersion</key>
     <string>$(CURRENT_PROJECT_VERSION)</string>
     <key>NSCalendarsFullAccessUsageDescription</key>
-    <string>StandSpace usa tu calendario para mostrar tu próximo evento en el módulo Calendario.</string>
+    <string>StandSpace uses your calendar to show your next event in the Calendar module.</string>
     <key>NSCalendarsUsageDescription</key>
     <string>StandSpace usa tu calendario para mostrar tu próximo evento en el módulo Calendario.</string>
     <key>NSAppleMusicUsageDescription</key>
-    <string>StandSpace usa tu biblioteca musical para mostrar la canción actual y ofrecer controles básicos en la página Música.</string>
+    <string>StandSpace uses your music library to show the current Apple Music song and provide basic playback controls.</string>
     <key>UILaunchScreen</key>
     <dict/>
     <key>UISupportedInterfaceOrientations</key>
