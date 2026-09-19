@@ -71,7 +71,10 @@ struct EditorView: View {
                 }
 
                 Section("StandSpace") {
-                    LabeledContent("Versión", value: "0.4.0")
+                    LabeledContent(
+                        "Versión",
+                        value: appVersion
+                    )
                     Text("StandSpace es gratuito. La meta del proyecto es ofrecer toda la experiencia principal sin paywalls ni módulos Pro.")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
@@ -93,6 +96,18 @@ struct EditorView: View {
                 }
             }
         }
+    }
+
+    private var appVersion: String {
+        let version = Bundle.main.object(
+            forInfoDictionaryKey:
+                "CFBundleShortVersionString"
+        ) as? String ?? "—"
+        let build = Bundle.main.object(
+            forInfoDictionaryKey:
+                "CFBundleVersion"
+        ) as? String ?? "—"
+        return "\(version) (\(build))"
     }
 
     private var activeSpaceBinding: Binding<UUID> {
