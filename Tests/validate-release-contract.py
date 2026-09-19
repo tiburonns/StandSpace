@@ -56,7 +56,7 @@ forbidden_localization_regressions = {
     "DashboardView.swift": [
         'Text("Editar StandSpace")',
         'Text("Listo")',
-        '"Diseño horizontal"',
+        '.accessibilityLabel(\n                        "Diseño horizontal"\n                    )',
     ],
     "StandbyPages.swift": [
         'Text("Fotos")',
