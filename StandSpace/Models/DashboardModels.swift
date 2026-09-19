@@ -9,12 +9,14 @@ enum StandSpaceKind: String, Codable, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
-    var title: String {
+    var title: String { title(language: .current) }
+
+    func title(language: StandSpaceAppLanguage) -> String {
         switch self {
-        case .desk: return "Escritorio"
-        case .night: return "Noche"
-        case .work: return "Trabajo"
-        case .kitchen: return "Cocina"
+        case .desk: return language.text(english: "Desk", spanish: "Escritorio")
+        case .night: return language.text(english: "Night", spanish: "Noche")
+        case .work: return language.text(english: "Work", spanish: "Trabajo")
+        case .kitchen: return language.text(english: "Kitchen", spanish: "Cocina")
         }
     }
 
@@ -56,12 +58,14 @@ enum LandscapePage: String, CaseIterable, Identifiable, Hashable {
 
     var id: String { rawValue }
 
-    var title: String {
+    var title: String { title(language: .current) }
+
+    func title(language: StandSpaceAppLanguage) -> String {
         switch self {
-        case .dashboard: return "Panel"
-        case .clock: return "Reloj"
-        case .photos: return "Fotos"
-        case .music: return "Música"
+        case .dashboard: return language.text(english: "Dashboard", spanish: "Panel")
+        case .clock: return language.text(english: "Clock", spanish: "Reloj")
+        case .photos: return language.text(english: "Photos", spanish: "Fotos")
+        case .music: return language.text(english: "Music", spanish: "Música")
         case .focus: return "Focus"
         }
     }
@@ -90,9 +94,11 @@ enum LandscapePreset: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
-    var title: String {
+    var title: String { title(language: .current) }
+
+    func title(language: StandSpaceAppLanguage) -> String {
         switch self {
-        case .adaptive: return "Adaptativo"
+        case .adaptive: return language.text(english: "Adaptive", spanish: "Adaptativo")
         case .duo: return "Duo"
         case .quad: return "Quad"
         case .focus: return "Focus"
@@ -118,12 +124,14 @@ enum ModuleCategory: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
-    var title: String {
+    var title: String { title(language: .current) }
+
+    func title(language: StandSpaceAppLanguage) -> String {
         switch self {
-        case .essentials: return "Esenciales"
-        case .productivity: return "Productividad"
-        case .information: return "Información"
-        case .system: return "Sistema"
+        case .essentials: return language.text(english: "Essentials", spanish: "Esenciales")
+        case .productivity: return language.text(english: "Productivity", spanish: "Productividad")
+        case .information: return language.text(english: "Information", spanish: "Información")
+        case .system: return language.text(english: "System", spanish: "Sistema")
         case .personal: return "Personal"
         }
     }
@@ -142,31 +150,35 @@ enum ModuleKind: String, Codable, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
-    var title: String {
+    var title: String { title(language: .current) }
+
+    func title(language: StandSpaceAppLanguage) -> String {
         switch self {
-        case .clock: return "Reloj"
-        case .date: return "Fecha"
-        case .battery: return "Batería"
-        case .timer: return "Temporizador"
-        case .calendar: return "Próximo evento"
-        case .storage: return "Almacenamiento"
-        case .device: return "Dispositivo"
-        case .dayProgress: return "Progreso del día"
-        case .text: return "Texto"
+        case .clock: return language.text(english: "Clock", spanish: "Reloj")
+        case .date: return language.text(english: "Date", spanish: "Fecha")
+        case .battery: return language.text(english: "Battery", spanish: "Batería")
+        case .timer: return language.text(english: "Timer", spanish: "Temporizador")
+        case .calendar: return language.text(english: "Next Event", spanish: "Próximo evento")
+        case .storage: return language.text(english: "Storage", spanish: "Almacenamiento")
+        case .device: return language.text(english: "Device", spanish: "Dispositivo")
+        case .dayProgress: return language.text(english: "Day Progress", spanish: "Progreso del día")
+        case .text: return language.text(english: "Text", spanish: "Texto")
         }
     }
 
-    var subtitle: String {
+    var subtitle: String { subtitle(language: .current) }
+
+    func subtitle(language: StandSpaceAppLanguage) -> String {
         switch self {
-        case .clock: return "Hora actual con distintos tamaños"
-        case .date: return "Día, fecha y año de un vistazo"
-        case .battery: return "Nivel y estado de carga"
-        case .timer: return "Cuenta regresiva rápida"
-        case .calendar: return "El siguiente evento de tu calendario"
-        case .storage: return "Espacio usado y disponible"
-        case .device: return "Nombre, modelo y sistema"
-        case .dayProgress: return "Qué porcentaje del día ya pasó"
-        case .text: return "Notas o información personalizada"
+        case .clock: return language.text(english: "Current time in multiple sizes", spanish: "Hora actual con distintos tamaños")
+        case .date: return language.text(english: "Day, date, and year at a glance", spanish: "Día, fecha y año de un vistazo")
+        case .battery: return language.text(english: "Battery level and charging state", spanish: "Nivel y estado de carga")
+        case .timer: return language.text(english: "Quick countdown timer", spanish: "Cuenta regresiva rápida")
+        case .calendar: return language.text(english: "Your next calendar event", spanish: "El siguiente evento de tu calendario")
+        case .storage: return language.text(english: "Used and available space", spanish: "Espacio usado y disponible")
+        case .device: return language.text(english: "Name, model, and system", spanish: "Nombre, modelo y sistema")
+        case .dayProgress: return language.text(english: "How much of the day has passed", spanish: "Qué porcentaje del día ya pasó")
+        case .text: return language.text(english: "Notes or custom information", spanish: "Notas o información personalizada")
         }
     }
 
@@ -280,14 +292,16 @@ enum ModuleStyle: String, Codable, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
-    var title: String {
+    var title: String { title(language: .current) }
+
+    func title(language: StandSpaceAppLanguage) -> String {
         switch self {
-        case .glass: return "Cristal"
-        case .minimal: return "Minimalista"
-        case .solid: return "Sólido"
-        case .outline: return "Contorno"
-        case .gradient: return "Gradiente"
-        case .tinted: return "Tinte"
+        case .glass: return language.text(english: "Glass", spanish: "Cristal")
+        case .minimal: return language.text(english: "Minimal", spanish: "Minimalista")
+        case .solid: return language.text(english: "Solid", spanish: "Sólido")
+        case .outline: return language.text(english: "Outline", spanish: "Contorno")
+        case .gradient: return language.text(english: "Gradient", spanish: "Gradiente")
+        case .tinted: return language.text(english: "Tinted", spanish: "Tinte")
         }
     }
 }
@@ -302,14 +316,16 @@ enum BoardBackgroundStyle: String, Codable, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
-    var title: String {
+    var title: String { title(language: .current) }
+
+    func title(language: StandSpaceAppLanguage) -> String {
         switch self {
-        case .black: return "Negro"
-        case .midnight: return "Medianoche"
-        case .standbyRed: return "Rojo nocturno"
+        case .black: return language.text(english: "Black", spanish: "Negro")
+        case .midnight: return language.text(english: "Midnight", spanish: "Medianoche")
+        case .standbyRed: return language.text(english: "Night Red", spanish: "Rojo nocturno")
         case .oled: return "OLED"
         case .aurora: return "Aurora"
-        case .warm: return "Cálido"
+        case .warm: return language.text(english: "Warm", spanish: "Cálido")
         }
     }
 
