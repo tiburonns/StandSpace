@@ -7,6 +7,18 @@ struct EditorView: View {
     var body: some View {
         NavigationStack {
             List {
+                if let warning =
+                    store.persistenceWarning {
+                    Section {
+                        Label(
+                            warning,
+                            systemImage:
+                                "exclamationmark.triangle.fill"
+                        )
+                        .foregroundStyle(.orange)
+                    }
+                }
+
                 Section("Space") {
                     Picker("Space activo", selection: activeSpaceBinding) {
                         ForEach(store.spaces) { space in
