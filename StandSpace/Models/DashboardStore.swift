@@ -1,3 +1,4 @@
+import Foundation
 import SwiftUI
 
 private struct DashboardStoreEnvelope: Codable {
@@ -55,7 +56,7 @@ final class DashboardStore: ObservableObject {
         }
     }
 
-    @Published private(set) var persistenceWarning: String?
+    @Published private(set) var persistenceWarning: String? = nil
 
     private var isApplyingSpace = false
     private var blocksSpacePersistence = false
@@ -94,26 +95,46 @@ final class DashboardStore: ObservableObject {
         let loadedSpaces: [StandSpaceProfile]
         var detectedNewerSchema = false
 
-        if let data = defaults.data(forKey: Keys.spaces),
-           let envelope = try? JSONDecoder().decode(
-               DashboardStoreEnvelope.self,
-               from: data
-           ) {
-            if envelope.schemaVersion
-                <= DashboardStoreEnvelope.currentSchemaVersion,
-               !envelope.spaces.isEmpty {
-                loadedSpaces = envelope.spaces.map(
-                    Self.repairProfile
-                )
-            } else if envelope.schemaVersion
-                        > DashboardStoreEnvelope
-                            .currentSchemaVersion {
-                // Never overwrite data created by a newer StandSpace schema
-                // from an older build.
+        if let data = defaults.data(
+            forKey: Keys.spaces
+        ) {
+            let rawSchemaVersion: Int? = {
+                guard
+                    let object = try? JSONSerialization
+                        .jsonObject(with: data)
+                        as? [String: Any]
+                else {
+                    return nil
+                }
+                return object["schemaVersion"]
+                    as? Int
+            }()
+
+            if let rawSchemaVersion,
+               rawSchemaVersion
+                > DashboardStoreEnvelope
+                    .currentSchemaVersion {
+                // Detect this before Codable. A future schema might no longer
+                // decode with this older model, but its data still must not be
+                // overwritten.
                 detectedNewerSchema = true
                 loadedSpaces = Self.makeDefaultSpaces(
                     deskItems: legacyItems,
                     deskBackground: legacyBackground
+                )
+            } else if
+                let envelope = try? JSONDecoder()
+                    .decode(
+                        DashboardStoreEnvelope.self,
+                        from: data
+                    ),
+                envelope.schemaVersion
+                    <= DashboardStoreEnvelope
+                        .currentSchemaVersion,
+                !envelope.spaces.isEmpty
+            {
+                loadedSpaces = envelope.spaces.map(
+                    Self.repairProfile
                 )
             } else {
                 loadedSpaces = Self.makeDefaultSpaces(
@@ -200,10 +221,12 @@ final class DashboardStore: ObservableObject {
         backgroundStyle = next.backgroundStyle
         isApplyingSpace = false
 
-        UserDefaults.standard.set(
-            id.uuidString,
-            forKey: Keys.selectedSpace
-        )
+        if !blocksSpacePersistence {
+            UserDefaults.standard.set(
+                id.uuidString,
+                forKey: Keys.selectedSpace
+            )
+        }
 
         saveSpaces()
     }
