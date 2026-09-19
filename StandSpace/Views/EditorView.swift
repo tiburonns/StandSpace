@@ -3,7 +3,7 @@ import SwiftUI
 struct EditorView: View {
     @EnvironmentObject private var store: DashboardStore
     @Environment(\.dismiss) private var dismiss
-    @AppStorage("standspace.app.language")
+    @AppStorage(StandSpaceAppLanguage.storageKey)
     private var languageRawValue = StandSpaceAppLanguage.system.rawValue
 
     var body: some View {
@@ -33,7 +33,7 @@ struct EditorView: View {
                     }
                 }
 
-                Section(t("Space", "Space")) {
+                Section(t("Space", "Espacio")) {
                     Picker(t("Active space", "Space activo"), selection: activeSpaceBinding) {
                         ForEach(store.spaces) { space in
                             Label(
@@ -52,7 +52,7 @@ struct EditorView: View {
                     )
 
                     Toggle(
-                        "Auto-dim",
+                        t("Auto-dim", "Atenuación automática"),
                         isOn: $store.autoDimEnabled
                     )
 
@@ -160,17 +160,22 @@ struct EditorView: View {
 struct ModuleEditorView: View {
     @Binding var item: DashboardItem
 
+    private var language: StandSpaceAppLanguage { .current }
+    private func t(_ english: String, _ spanish: String) -> String {
+        language.text(english: english, spanish: spanish)
+    }
+
     var body: some View {
         Form {
-            Section("Diseño") {
-                Picker("Tamaño vertical", selection: $item.size) {
+            Section(t("Layout", "Diseño")) {
+                Picker(t("Portrait size", "Tamaño vertical"), selection: $item.size) {
                     ForEach(item.kind.supportedSizes) { size in
                         Text(size.title).tag(size)
                     }
                 }
 
                 Picker(
-                    "Tamaño horizontal",
+                    t("Landscape size", "Tamaño horizontal"),
                     selection: landscapeSizeBinding
                 ) {
                     ForEach(item.kind.supportedSizes) { size in
@@ -178,7 +183,7 @@ struct ModuleEditorView: View {
                     }
                 }
 
-                Picker("Estilo", selection: $item.style) {
+                Picker(t("Style", "Estilo"), selection: $item.style) {
                     ForEach(ModuleStyle.allCases) { style in
                         Text(style.title).tag(style)
                     }
@@ -186,14 +191,14 @@ struct ModuleEditorView: View {
             }
 
             if item.kind == .text {
-                Section("Contenido") {
-                    TextField("Título", text: $item.title)
-                    TextField("Texto", text: $item.text, axis: .vertical)
+                Section(t("Content", "Contenido")) {
+                    TextField(t("Title", "Título"), text: $item.title)
+                    TextField(t("Text", "Texto"), text: $item.text, axis: .vertical)
                         .lineLimit(3...8)
                 }
             }
 
-            Section("Vista previa") {
+            Section(t("Preview", "Vista previa")) {
                 ModuleCardView(item: item)
                     .frame(height: previewHeight)
                     .listRowInsets(EdgeInsets())
@@ -222,6 +227,11 @@ struct ModuleEditorView: View {
 
 struct ModuleGalleryView: View {
     @Environment(\.dismiss) private var dismiss
+
+    private var language: StandSpaceAppLanguage { .current }
+    private func t(_ english: String, _ spanish: String) -> String {
+        language.text(english: english, spanish: spanish)
+    }
     @State private var searchText = ""
     @State private var selectedKind: ModuleKind?
     @State private var selectedSize: ModuleSize?
@@ -254,11 +264,11 @@ struct ModuleGalleryView: View {
                 }
                 .padding()
             }
-            .navigationTitle("Agregar módulo")
-            .searchable(text: $searchText, prompt: "Buscar módulos")
+            .navigationTitle(t("Add Module", "Agregar módulo"))
+            .searchable(text: $searchText, prompt: t("Search modules", "Buscar módulos"))
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cerrar") { dismiss() }
+                    Button(t("Close", "Cerrar")) { dismiss() }
                 }
             }
         }
@@ -327,6 +337,11 @@ struct ModuleGalleryView: View {
 
 private struct ModuleAddConfigurator: View {
     let kind: ModuleKind
+
+    private var language: StandSpaceAppLanguage { .current }
+    private func t(_ english: String, _ spanish: String) -> String {
+        language.text(english: english, spanish: spanish)
+    }
     @State var selectedSize: ModuleSize
     @State var selectedStyle: ModuleStyle
     let onAdd: (ModuleSize, ModuleStyle) -> Void
@@ -340,14 +355,14 @@ private struct ModuleAddConfigurator: View {
                             kind: kind,
                             size: selectedSize,
                             style: selectedStyle,
-                            title: kind == .text ? "Nota" : "",
-                            text: kind == .text ? "Tu texto aquí" : ""
+                            title: kind == .text ? t("Note", "Nota") : "",
+                            text: kind == .text ? t("Your text here", "Tu texto aquí") : ""
                         )
                     )
                     .frame(height: selectedSize.span.rows == 1 ? 180 : 280)
 
                     VStack(alignment: .leading, spacing: 10) {
-                        Text("Tamaño")
+                        Text(t("Size", "Tamaño"))
                             .font(.headline)
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack {
@@ -362,7 +377,7 @@ private struct ModuleAddConfigurator: View {
                     }
 
                     VStack(alignment: .leading, spacing: 10) {
-                        Text("Estilo")
+                        Text(t("Style", "Estilo"))
                             .font(.headline)
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack {
@@ -379,7 +394,7 @@ private struct ModuleAddConfigurator: View {
                     Button {
                         onAdd(selectedSize, selectedStyle)
                     } label: {
-                        Label("Agregar a StandSpace", systemImage: "plus")
+                        Label(t("Add to StandSpace", "Agregar a StandSpace"), systemImage: "plus")
                             .font(.headline)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 14)
