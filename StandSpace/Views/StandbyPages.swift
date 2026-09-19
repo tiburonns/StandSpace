@@ -11,6 +11,11 @@ struct StandbyPhotoPage: View {
     @State private var selectedItem: PhotosPickerItem?
     @State private var image: UIImage?
 
+    private var language: StandSpaceAppLanguage { .current }
+    private func t(_ english: String, _ spanish: String) -> String {
+        language.text(english: english, spanish: spanish)
+    }
+
     var body: some View {
         ZStack {
             if let image = image {
@@ -42,9 +47,9 @@ struct StandbyPhotoPage: View {
                 VStack(spacing: 12) {
                     Image(systemName: "photo.on.rectangle.angled")
                         .font(.system(size: 52))
-                    Text("Fotos")
+                    Text(t("Photos", "Fotos"))
                         .font(.title2.bold())
-                    Text("Elige una fotografía para usarla como página de StandBy.")
+                    Text(t("Choose a photo to use as a StandBy page.", "Elige una fotografía para usarla como página de StandBy."))
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
@@ -62,8 +67,8 @@ struct StandbyPhotoPage: View {
                     ) {
                         Label(
                             image == nil
-                                ? "Elegir foto"
-                                : "Cambiar foto",
+                                ? t("Choose Photo", "Elegir foto")
+                                : t("Change Photo", "Cambiar foto"),
                             systemImage: "photo.badge.plus"
                         )
                         .font(.subheadline.weight(.semibold))
@@ -173,10 +178,27 @@ struct StandbyMusicPage: View {
 
     @State private var authorization =
         MPMediaLibrary.authorizationStatus()
-    @State private var title = "Música"
-    @State private var artist = "Nada reproduciéndose"
+    @State private var nowPlayingTitle: String?
+    @State private var nowPlayingArtist: String?
+    @State private var hasNowPlayingItem = false
     @State private var artwork: UIImage?
     @State private var isPlaying = false
+
+    private var language: StandSpaceAppLanguage { .current }
+    private func t(_ english: String, _ spanish: String) -> String {
+        language.text(english: english, spanish: spanish)
+    }
+
+    private var displayTitle: String {
+        nowPlayingTitle ?? t("Music", "Música")
+    }
+
+    private var displayArtist: String {
+        guard hasNowPlayingItem else {
+            return t("Nothing Playing", "Nada reproduciéndose")
+        }
+        return nowPlayingArtist ?? t("Unknown Artist", "Artista desconocido")
+    }
 
     private let player =
         MPMusicPlayerController.systemMusicPlayer
@@ -283,11 +305,11 @@ struct StandbyMusicPage: View {
             )
 
             VStack(alignment: .leading, spacing: 10) {
-                Text(title)
+                Text(displayTitle)
                     .font(.title.bold())
                     .lineLimit(2)
 
-                Text(artist)
+                Text(displayArtist)
                     .font(.title3)
                     .foregroundStyle(.secondary)
                     .lineLimit(2)
@@ -341,16 +363,16 @@ struct StandbyMusicPage: View {
             Image(systemName: "music.note")
                 .font(.system(size: 50))
 
-            Text("Música")
+            Text(t("Music", "Música"))
                 .font(.title2.bold())
 
-            Text("Permite acceso a tu biblioteca para mostrar la canción actual de Apple Music y usar controles básicos.")
+            Text(t("Allow access to your library to show the current Apple Music song and use basic controls.", "Permite acceso a tu biblioteca para mostrar la canción actual de Apple Music y usar controles básicos."))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: 430)
 
-            Button("Permitir acceso") {
+            Button(t("Allow Access", "Permitir acceso")) {
                 requestAuthorization()
             }
             .buttonStyle(.borderedProminent)
@@ -374,17 +396,9 @@ struct StandbyMusicPage: View {
     private func refreshNowPlaying() {
         let item = player.nowPlayingItem
 
-        title =
-            item?.title
-            ?? "Música"
-
-        artist =
-            item?.artist
-            ?? (
-                item == nil
-                ? "Nada reproduciéndose"
-                : "Artista desconocido"
-            )
+        hasNowPlayingItem = item != nil
+        nowPlayingTitle = item?.title
+        nowPlayingArtist = item?.artist
 
         artwork = item?.artwork?.image(
             at: CGSize(
