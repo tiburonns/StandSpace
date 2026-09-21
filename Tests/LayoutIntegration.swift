@@ -20,7 +20,8 @@ struct StandSpaceLayoutIntegration {
         try testLandscapeOverrides()
         try testSnappingClampsToGrid()
         try testOversizedModuleClampsToColumnCount()
-        print("PASS: StandSpace packing, orientation, snapping, and grid bounds")
+        try testLanguageResolutionAndModelTitles()
+        print("PASS: StandSpace packing, orientation, snapping, grid bounds, and localization")
     }
 
     private static func require(
@@ -133,6 +134,47 @@ struct StandSpaceLayoutIntegration {
         )
         try require(farRight.column == 2, "Snapping did not clamp the module to the right edge")
         try require(farRight.row >= 0, "Snapping produced a negative row")
+    }
+
+    private static func testLanguageResolutionAndModelTitles() throws {
+        try require(
+            StandSpaceAppLanguage.system.resolvedCode(
+                preferredLanguages: ["es-MX", "en-US"]
+            ) == "es",
+            "System language did not resolve Spanish regional locales"
+        )
+        try require(
+            StandSpaceAppLanguage.system.resolvedCode(
+                preferredLanguages: ["fr-FR", "en-US"]
+            ) == "en",
+            "Unsupported system language did not fall back to English"
+        )
+        try require(
+            ModuleKind.calendar.title(language: .english) == "Next Event",
+            "English module title regressed"
+        )
+        try require(
+            ModuleKind.calendar.title(language: .spanish) == "Próximo evento",
+            "Spanish module title regressed"
+        )
+        try require(
+            StandSpaceKind.desk.title(language: .english) == "Desk",
+            "English Space title regressed"
+        )
+        try require(
+            StandSpaceKind.desk.title(language: .spanish) == "Escritorio",
+            "Spanish Space title regressed"
+        )
+        try require(
+            ModuleStyle.glass.title(language: .english) == "Glass"
+                && ModuleStyle.glass.title(language: .spanish) == "Cristal",
+            "Module style localization regressed"
+        )
+        try require(
+            BoardBackgroundStyle.standbyRed.title(language: .english) == "Night Red"
+                && BoardBackgroundStyle.standbyRed.title(language: .spanish) == "Rojo nocturno",
+            "Background localization regressed"
+        )
     }
 
     private static func testOversizedModuleClampsToColumnCount() throws {
