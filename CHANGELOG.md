@@ -1,6 +1,12 @@
 # Changelog
 
-## 0.4.2 (development) — localization, reliability & efficiency
+## 0.4.3 (development) — complete localization & hardening
+
+- Localized persistent model titles and subtitles across Spaces, landscape pages/presets, module categories, module kinds, styles, and backgrounds.
+- Added deterministic language-resolution coverage for System / English / Spanish, including regional Spanish fallback and English fallback for unsupported system languages.
+- Preserved the 0.4.2 reliability work below as part of the current development line.
+
+## 0.4.2 — localization, reliability & efficiency
 
 - Added persistent System / English / Español language selection, localized permission descriptions, and Spanish as a declared project region.
 - Added a privacy manifest for UserDefaults and user-visible disk-space reporting.
