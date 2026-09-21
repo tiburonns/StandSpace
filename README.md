@@ -5,7 +5,7 @@
 StandSpace is a free, customizable modular dashboard for iPhone and iPad. It takes the glanceable idea behind a standby display and turns it into a flexible canvas: users decide what is visible, how large it is, how it looks, and how the space is arranged.
 
 > Released milestone: **0.4.0 — Spaces, swipe pages & OLED care**  
-> Current `main`: **0.4.2 (build 8)** — language, localized permissions, reliability, persistence, timer, photo-memory, and CI hardening.
+> Current `main`: **0.4.3 (build 9)** — complete EN/ES/System model localization, localized permissions, reliability, persistence, timer, photo-memory, and CI hardening.
 
 ## Product principles
 
@@ -75,7 +75,7 @@ See CHANGELOG.md for the current release notes.
 StandSpace es un dashboard modular gratuito y personalizable para iPhone y iPad. Toma la idea de una pantalla de consulta rápida y la convierte en un lienzo flexible: el usuario decide qué se muestra, cuánto espacio ocupa, cómo se ve y cómo se organiza.
 
 > Hito distribuido: **0.4.0 — Spaces, páginas deslizables y cuidado OLED**  
-> `main` actual: **0.4.2 (build 8)** — idioma, permisos localizados, fiabilidad, persistencia, temporizador, memoria de fotos y CI.
+> `main` actual: **0.4.3 (build 9)** — localización completa EN/ES/Sistema de modelos, permisos localizados, fiabilidad, persistencia, temporizador, memoria de fotos y CI.
 
 ## Principios del producto
 
