@@ -3,6 +3,8 @@ import SwiftUI
 struct TextModuleView: View {
     let item: DashboardItem
 
+    private var language: StandSpaceAppLanguage { .current }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             if !item.title.isEmpty {
@@ -11,7 +13,13 @@ struct TextModuleView: View {
                     .foregroundStyle(.secondary)
             }
 
-            Text(item.text.isEmpty ? "Tu texto aquí" : item.text)
+            Text(
+                item.text.isEmpty
+                    ? StandSpaceLocalizedCopy.textModulePlaceholder(
+                        language: language
+                    )
+                    : item.text
+            )
                 .font(item.size == .small ? .title3.weight(.semibold) : .title.weight(.semibold))
                 .minimumScaleFactor(0.65)
 

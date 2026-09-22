@@ -61,6 +61,35 @@ struct LanguageIntegration {
             "Background names are not bilingual"
         )
 
+        try expect(
+            StandSpaceLocalizedCopy.batteryState(
+                .charging,
+                language: .english
+            ) == "Charging"
+                && StandSpaceLocalizedCopy.batteryState(
+                    .charging,
+                    language: .spanish
+                ) == "Cargando",
+            "Battery state copy is not bilingual"
+        )
+        try expect(
+            StandSpaceLocalizedCopy.textModulePlaceholder(
+                language: .english
+            ) == "Your text here"
+                && StandSpaceLocalizedCopy.textModulePlaceholder(
+                    language: .spanish
+                ) == "Tu texto aquí",
+            "Text-module defaults are not bilingual"
+        )
+        try expect(
+            StandSpaceLocalizedCopy.newerSchemaWarning(
+                language: .english
+            ) != StandSpaceLocalizedCopy.newerSchemaWarning(
+                language: .spanish
+            ),
+            "Persistence warning is not bilingual"
+        )
+
         print("PASS: StandSpace language resolution and bilingual model metadata")
     }
 

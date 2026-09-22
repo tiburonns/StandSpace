@@ -7,6 +7,8 @@ struct BatteryModuleView: View {
     @State private var level: Float = UIDevice.current.batteryLevel
     @State private var state: UIDevice.BatteryState = UIDevice.current.batteryState
 
+    private var language: StandSpaceAppLanguage { .current }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
@@ -100,17 +102,24 @@ struct BatteryModuleView: View {
     }
 
     private var stateText: String {
+        let copyState: StandSpaceBatteryCopyState
+
         switch state {
         case .charging:
-            return "Cargando"
+            copyState = .charging
         case .full:
-            return "Carga completa"
+            copyState = .full
         case .unplugged:
-            return "Usando batería"
+            copyState = .unplugged
         case .unknown:
-            return "Estado desconocido"
+            copyState = .unknown
         @unknown default:
-            return "Estado desconocido"
+            copyState = .unknown
         }
+
+        return StandSpaceLocalizedCopy.batteryState(
+            copyState,
+            language: language
+        )
     }
 }

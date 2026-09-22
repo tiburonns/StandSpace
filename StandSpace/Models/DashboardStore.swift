@@ -56,7 +56,12 @@ final class DashboardStore: ObservableObject {
         }
     }
 
-    @Published private(set) var persistenceWarning: String? = nil
+    var persistenceWarning: String? {
+        guard blocksSpacePersistence else { return nil }
+        return StandSpaceLocalizedCopy.newerSchemaWarning(
+            language: .current
+        )
+    }
 
     private var isApplyingSpace = false
     private var blocksSpacePersistence = false
@@ -193,10 +198,6 @@ final class DashboardStore: ObservableObject {
 
         self.blocksSpacePersistence =
             detectedNewerSchema
-        self.persistenceWarning =
-            detectedNewerSchema
-            ? "Se detectó una configuración creada por una versión más nueva. Esta versión no la sobrescribirá; actualiza StandSpace o restablece los Spaces explícitamente."
-            : nil
     }
 
     var activeSpace: StandSpaceProfile {
@@ -257,8 +258,11 @@ final class DashboardStore: ObservableObject {
         )
 
         if kind == .text {
-            item.title = "Nota"
-            item.text = "Tu texto aquí"
+            let language = StandSpaceAppLanguage.current
+            item.title = StandSpaceLocalizedCopy
+                .textModuleDefaultTitle(language: language)
+            item.text = StandSpaceLocalizedCopy
+                .textModulePlaceholder(language: language)
         }
 
         withAnimation(.snappy) {
@@ -496,7 +500,6 @@ final class DashboardStore: ObservableObject {
         // Reset is an explicit destructive action, so it is the one operation
         // allowed to replace data from a newer unsupported schema.
         blocksSpacePersistence = false
-        persistenceWarning = nil
 
         let fresh = Self.makeDefaultSpaces(
             deskItems: Self.deskItems,

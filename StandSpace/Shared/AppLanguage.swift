@@ -60,3 +60,68 @@ enum StandSpaceAppLanguage: String, CaseIterable, Identifiable {
             : english
     }
 }
+
+enum StandSpaceBatteryCopyState: CaseIterable {
+    case charging
+    case full
+    case unplugged
+    case unknown
+}
+
+enum StandSpaceLocalizedCopy {
+    static func batteryState(
+        _ state: StandSpaceBatteryCopyState,
+        language: StandSpaceAppLanguage
+    ) -> String {
+        switch state {
+        case .charging:
+            return language.text(
+                english: "Charging",
+                spanish: "Cargando"
+            )
+        case .full:
+            return language.text(
+                english: "Fully charged",
+                spanish: "Carga completa"
+            )
+        case .unplugged:
+            return language.text(
+                english: "On battery",
+                spanish: "Usando batería"
+            )
+        case .unknown:
+            return language.text(
+                english: "Unknown state",
+                spanish: "Estado desconocido"
+            )
+        }
+    }
+
+    static func textModuleDefaultTitle(
+        language: StandSpaceAppLanguage
+    ) -> String {
+        language.text(
+            english: "Note",
+            spanish: "Nota"
+        )
+    }
+
+    static func textModulePlaceholder(
+        language: StandSpaceAppLanguage
+    ) -> String {
+        language.text(
+            english: "Your text here",
+            spanish: "Tu texto aquí"
+        )
+    }
+
+    static func newerSchemaWarning(
+        language: StandSpaceAppLanguage
+    ) -> String {
+        language.text(
+            english: "This configuration was created by a newer version. StandSpace will not overwrite it; update the app or explicitly reset Spaces.",
+            spanish: "Se detectó una configuración creada por una versión más nueva. StandSpace no la sobrescribirá; actualiza la app o restablece los Spaces explícitamente."
+        )
+    }
+}
+
