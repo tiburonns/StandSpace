@@ -49,7 +49,7 @@ StandSpace is a free, customizable modular dashboard for iPhone and iPad. It tak
 - Import/export of shareable StandSpace layouts.
 - Continue expanding the module-provider architecture and hardening persistence/migrations.
 
-See CHANGELOG.md for the current release notes.
+See CHANGELOG.md for the current release notes. The real-device release gate is in [docs/TESTING.md](docs/TESTING.md).
 
 ## Requirements
 
@@ -112,4 +112,4 @@ StandSpace es un dashboard modular gratuito y personalizable para iPhone y iPad.
 
 La versión 0.5 se enfocará en la integración con el ecosistema Apple: App Intents y Atajos, widgets compatibles con WidgetKit/StandBy donde sea posible, Live Activities para módulos temporales, sincronización de Spaces y preferencias mediante iCloud, e importación/exportación de diseños compartibles. También continuará la expansión de la arquitectura de módulos y el endurecimiento de persistencia y migraciones.
 
-Consulta CHANGELOG.md para ver los cambios de cada versión.
+Consulta CHANGELOG.md para ver los cambios de cada versión. El gate de pruebas en hardware real está en [docs/TESTING.es.md](docs/TESTING.es.md).
