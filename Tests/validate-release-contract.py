@@ -8,6 +8,8 @@ project = (ROOT / "StandSpace.xcodeproj/project.pbxproj").read_text(encoding="ut
 readme = (ROOT / "README.md").read_text(encoding="utf-8")
 changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
 app_language = (ROOT / "StandSpace/Shared/AppLanguage.swift").read_text(encoding="utf-8")
+testing_en = (ROOT / "docs/TESTING.md").read_text(encoding="utf-8")
+testing_es = (ROOT / "docs/TESTING.es.md").read_text(encoding="utf-8")
 
 versions = set(re.findall(r"MARKETING_VERSION = ([0-9.]+);", project))
 builds = set(re.findall(r"CURRENT_PROJECT_VERSION = ([0-9]+);", project))
@@ -23,6 +25,13 @@ if f"> `main` actual: **{version} (build {build})**" not in readme:
     raise SystemExit("version contract failed: Spanish README status is stale")
 if f"## {version} (development)" not in changelog:
     raise SystemExit("version contract failed: changelog development version is stale")
+
+if not testing_en.startswith(f"# StandSpace {version} "):
+    raise SystemExit("version contract failed: English physical test plan is stale")
+if not testing_es.startswith(f"# StandSpace {version} "):
+    raise SystemExit("version contract failed: Spanish physical test plan is stale")
+if "docs/TESTING.md" not in readme or "docs/TESTING.es.md" not in readme:
+    raise SystemExit("documentation contract failed: README does not link both physical test plans")
 
 for required_region in ["en", "es"]:
     if f"\t\t\t\t{required_region}," not in project:
