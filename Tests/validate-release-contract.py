@@ -84,6 +84,19 @@ for filename, fragments in forbidden_localization_regressions.items():
 
 with (ROOT / "StandSpace/PrivacyInfo.xcprivacy").open("rb") as handle:
     privacy = plistlib.load(handle)
+with (ROOT / "StandSpace/Info.plist").open("rb") as handle:
+    info = plistlib.load(handle)
+
+if info.get("ITSAppUsesNonExemptEncryption") is not False:
+    raise SystemExit("release contract failed: ITSAppUsesNonExemptEncryption must be false unless app encryption changes")
+if not info.get("NSCalendarsFullAccessUsageDescription"):
+    raise SystemExit("permission contract failed: missing calendar full-access usage description")
+if not info.get("NSAppleMusicUsageDescription"):
+    raise SystemExit("permission contract failed: missing Apple Music usage description")
+if not (ROOT / "LICENSE").exists():
+    raise SystemExit("repository contract failed: public repository requires LICENSE")
+if not (ROOT / "docs/TESTFLIGHT.md").exists():
+    raise SystemExit("release contract failed: docs/TESTFLIGHT.md is missing")
 
 if privacy.get("NSPrivacyTracking") is not False:
     raise SystemExit("privacy contract failed: tracking must be false")

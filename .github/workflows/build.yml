@@ -19,12 +19,24 @@ jobs:
         run: zsh Tests/run-layout-tests.sh
       - name: Run language tests
         run: zsh Tests/run-language-tests.sh
-      - name: Build StandSpace
+      - name: Build Release for iOS Simulator
         run: |
           xcodebuild \
             -project StandSpace.xcodeproj \
             -target StandSpace \
-            -configuration Debug \
+            -configuration Release \
             -sdk iphonesimulator \
             CODE_SIGNING_ALLOWED=NO \
+            SWIFT_TREAT_WARNINGS_AS_ERRORS=YES \
+            build
+
+      - name: Build Release for iPhoneOS
+        run: |
+          xcodebuild \
+            -project StandSpace.xcodeproj \
+            -target StandSpace \
+            -configuration Release \
+            -sdk iphoneos \
+            CODE_SIGNING_ALLOWED=NO \
+            SWIFT_TREAT_WARNINGS_AS_ERRORS=YES \
             build
