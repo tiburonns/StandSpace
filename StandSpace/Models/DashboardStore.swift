@@ -282,7 +282,7 @@ final class DashboardStore: ObservableObject {
         }
 
         withAnimation(.snappy) {
-            items.remove(at: index)
+            items.remove(atOffsets: IndexSet(integer: index))
         }
     }
 

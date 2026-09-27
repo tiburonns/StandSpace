@@ -251,7 +251,7 @@ struct CalendarModuleView: View {
 
     private func refreshAuthorization() {
         let status = EKEventStore.authorizationStatus(for: .event)
-        if status == .fullAccess || status == .authorized {
+        if status == .fullAccess {
             hasAccess = true
             loadNextEvent()
         } else {
