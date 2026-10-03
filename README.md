@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="Design/AppIcon-Source.png" width="180" alt="StandSpace app icon">
+</p>
+
 # StandSpace
 
 **Your space. Your information.**
