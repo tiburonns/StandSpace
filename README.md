@@ -117,3 +117,14 @@ StandSpace es un dashboard modular gratuito y personalizable para iPhone y iPad.
 La versión 0.5 se enfocará en la integración con el ecosistema Apple: App Intents y Atajos, widgets compatibles con WidgetKit/StandBy donde sea posible, Live Activities para módulos temporales, sincronización de Spaces y preferencias mediante iCloud, e importación/exportación de diseños compartibles. También continuará la expansión de la arquitectura de módulos y el endurecimiento de persistencia y migraciones.
 
 Consulta CHANGELOG.md para ver los cambios de cada versión. El gate de pruebas en hardware real está en [docs/TESTING.es.md](docs/TESTING.es.md).
+
+## Contact, support, and feedback
+
+Have a **question**, **suggestion**, found a **bug**, or want to share **feedback** about StandSpace? Use the project's GitHub Issues form:
+
+**[Open the contact and feedback form](https://github.com/tiburonns/StandSpace/issues/new?template=feedback.yml)**
+
+Choose the category that best fits: **Question, Suggestion, Bug, Feedback, Compatibility, or Other**. Include the app version, device/OS, and reproduction steps when relevant.
+
+Do not post passwords, tokens, keys, private addresses, or other sensitive personal information. For security vulnerabilities, follow the process in `SECURITY.md` when available.
+
