@@ -101,6 +101,10 @@ struct EditorView: View {
                         t("Questions, suggestions, bugs & feedback", "Dudas, sugerencias, errores y feedback"),
                         destination: URL(string: "https://github.com/tiburonns/StandSpace/issues/new?template=feedback.yml")!
                     )
+                    Link(
+                        t("Support development on Patreon", "Apoyar el desarrollo en Patreon"),
+                        destination: URL(string: "https://www.patreon.com/tiburonns")!
+                    )
                 }
 
                 Section("StandSpace") {
