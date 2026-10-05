@@ -96,6 +96,22 @@ struct EditorView: View {
                     .onMove(perform: store.move)
                 }
 
+                Section(t("Support", "Soporte")) {
+                    NavigationLink {
+                        StandSpaceFeedbackView()
+                    } label: {
+                        Label(
+                            t("Questions, suggestions and feedback", "Dudas, sugerencias y feedback"),
+                            systemImage: "bubble.left.and.bubble.right"
+                        )
+                    }
+
+                    Link(
+                        t("Open GitHub Issues", "Abrir Issues de GitHub"),
+                        destination: URL(string: "https://github.com/tiburonns/StandSpace/issues")!
+                    )
+                }
+
                 Section("StandSpace") {
                     LabeledContent(
                         t("Version", "Versión"),
@@ -421,5 +437,117 @@ private struct ChoiceButtonStyle: ButtonStyle {
             .background(selected ? Color.accentColor : Color.secondary.opacity(0.12), in: Capsule())
             .foregroundStyle(selected ? Color.white : Color.primary)
             .scaleEffect(configuration.isPressed ? 0.96 : 1)
+    }
+}
+
+
+private struct StandSpaceFeedbackView: View {
+    private enum Category: String, CaseIterable, Identifiable {
+        case question, suggestion, bug, feedback
+        var id: String { rawValue }
+
+        func title(language: StandSpaceAppLanguage) -> String {
+            switch self {
+            case .question: language.text(english: "Question", spanish: "Duda")
+            case .suggestion: language.text(english: "Suggestion", spanish: "Sugerencia")
+            case .bug: language.text(english: "Bug / Error", spanish: "Error")
+            case .feedback: language.text(english: "General feedback", spanish: "Feedback general")
+            }
+        }
+
+        var issuePrefix: String {
+            switch self {
+            case .question: "Question"
+            case .suggestion: "Suggestion"
+            case .bug: "Bug"
+            case .feedback: "Feedback"
+            }
+        }
+    }
+
+    @Environment(\.openURL) private var openURL
+    @AppStorage(StandSpaceAppLanguage.storageKey)
+    private var languageRawValue = StandSpaceAppLanguage.system.rawValue
+    @State private var category = Category.question
+    @State private var message = ""
+
+    private var language: StandSpaceAppLanguage {
+        StandSpaceAppLanguage(rawValue: languageRawValue) ?? .system
+    }
+
+    private func t(_ english: String, _ spanish: String) -> String {
+        language.text(english: english, spanish: spanish)
+    }
+
+    var body: some View {
+        Form {
+            Section(t("Type", "Tipo")) {
+                Picker(t("Category", "Categoría"), selection: $category) {
+                    ForEach(Category.allCases) { option in
+                        Text(option.title(language: language)).tag(option)
+                    }
+                }
+            }
+
+            Section(t("Message", "Mensaje")) {
+                TextEditor(text: $message)
+                    .frame(minHeight: 160)
+
+                Text(t(
+                    "Do not include passwords, personal information, or other sensitive data.",
+                    "No incluyas contraseñas, información personal ni otros datos sensibles."
+                ))
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            }
+
+            Section {
+                Button {
+                    submit()
+                } label: {
+                    Label(
+                        t("Open in GitHub", "Abrir en GitHub"),
+                        systemImage: "paperplane.fill"
+                    )
+                }
+                .disabled(message.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            } footer: {
+                Text(t(
+                    "GitHub will open so you can review and publish the report yourself.",
+                    "GitHub se abrirá para que revises y publiques el reporte tú mismo."
+                ))
+            }
+        }
+        .navigationTitle(t("Feedback", "Feedback"))
+    }
+
+    private var appVersion: String {
+        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "—"
+        let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "—"
+        return "\(version) (\(build))"
+    }
+
+    private func submit() {
+        var components = URLComponents()
+        components.scheme = "https"
+        components.host = "github.com"
+        components.path = "/tiburonns/StandSpace/issues/new"
+        components.queryItems = [
+            URLQueryItem(name: "title", value: "[\(category.issuePrefix)] "),
+            URLQueryItem(
+                name: "body",
+                value: """
+                \(message)
+
+                ---
+                App: StandSpace
+                Version: \(appVersion)
+                """
+            )
+        ]
+
+        if let url = components.url {
+            openURL(url)
+        }
     }
 }
