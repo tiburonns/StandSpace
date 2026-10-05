@@ -33,7 +33,7 @@ StandSpace is a free, customizable modular dashboard for iPhone and iPad. It tak
 - Clock, date, device battery, custom text, Timer, Calendar, Storage, Device Info, and Day Progress modules.
 - Persistent Spaces for Desk, Night, Work, and Kitchen, each with independent modules, backgrounds, portrait layout, and landscape layout.
 - First-class landscape StandBy experience with Dashboard, Clock, Photos, Music, and Focus swipe pages.
-- User-selected photo display and an Apple Music page with artwork, now-playing metadata, and basic transport controls when access is granted.
+- User-selected photo display and a system music playback page powered by `MediaPlayer`, with artwork, now-playing metadata, and basic transport controls when media-library access is granted.
 - Glass, minimal, solid, outline, gradient, and tinted module styles.
 - Black, Midnight, Night Red, OLED, Aurora, and Warm backgrounds.
 - Auto-dim and subtle OLED pixel shifting options.
@@ -103,7 +103,7 @@ StandSpace es un dashboard modular gratuito y personalizable para iPhone y iPad.
 - Reloj, fecha, batería del dispositivo, texto personalizado, Temporizador, Calendario, Almacenamiento, Información del dispositivo y Progreso del día.
 - Spaces persistentes para Escritorio, Noche, Trabajo y Cocina, cada uno con módulos, fondo y distribuciones independientes en vertical y horizontal.
 - Experiencia StandBy horizontal con páginas deslizables de Dashboard, Reloj, Fotos, Música y Focus.
-- Página de foto elegida por el usuario y página de Apple Music con portada, información de reproducción y controles básicos cuando se concede acceso.
+- Página de foto elegida por el usuario y página de reproducción musical del sistema basada en `MediaPlayer`, con portada, información de reproducción y controles básicos cuando se concede acceso a la biblioteca multimedia.
 - Estilos cristal, minimalista, sólido, contorno, gradiente y tinte.
 - Fondos Negro, Medianoche, Rojo nocturno, OLED, Aurora y Cálido.
 - Atenuación automática y desplazamiento sutil de píxeles para protección OLED.
@@ -117,3 +117,16 @@ StandSpace es un dashboard modular gratuito y personalizable para iPhone y iPad.
 La versión 0.5 se enfocará en la integración con el ecosistema Apple: App Intents y Atajos, widgets compatibles con WidgetKit/StandBy donde sea posible, Live Activities para módulos temporales, sincronización de Spaces y preferencias mediante iCloud, e importación/exportación de diseños compartibles. También continuará la expansión de la arquitectura de módulos y el endurecimiento de persistencia y migraciones.
 
 Consulta CHANGELOG.md para ver los cambios de cada versión. El gate de pruebas en hardware real está en [docs/TESTING.es.md](docs/TESTING.es.md).
+
+## Contact, support, and feedback
+
+Have a **question**, **suggestion**, found a **bug**, or want to share **feedback** about StandSpace? Use the project's GitHub Issues form:
+
+**[Open the contact and feedback form](https://github.com/tiburonns/StandSpace/issues/new?template=feedback.yml)**
+
+**[❤️ Support development on Patreon](https://www.patreon.com/tiburonns)**
+
+Choose the category that best fits: **Question, Suggestion, Bug, Feedback, Compatibility, or Other**. Include the app version, device/OS, and reproduction steps when relevant.
+
+Do not post passwords, tokens, keys, private addresses, or other sensitive personal information. For security vulnerabilities, follow the process in `SECURITY.md` when available.
+
