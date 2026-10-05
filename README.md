@@ -42,6 +42,12 @@ StandSpace is a free, customizable modular dashboard for iPhone and iPad. It tak
 - Versioned Space persistence, suspension-safe Timer state, downsampled photo loading, and lower-frequency/event-driven Music refresh for better reliability and efficiency.
 - CI checks the privacy manifest, runs deterministic grid/packing tests, and builds the iOS target on every push/PR.
 
+## Contact and feedback
+
+Questions, suggestions, bug reports, and general feedback can be sent through **Settings → Support** in StandSpace or directly through [GitHub Issues](https://github.com/tiburonns/StandSpace/issues). StandSpace prepares the report and opens GitHub so the user can review it before publishing.
+
+Do not include passwords, private information, or other sensitive data. Security vulnerabilities should use GitHub's private **Security → Report a vulnerability** flow.
+
 ## Next milestone
 
 ### 0.5 — Apple ecosystem integration
@@ -111,6 +117,12 @@ StandSpace es un dashboard modular gratuito y personalizable para iPhone y iPad.
 - Compatibilidad y migración para configuraciones guardadas por versiones anteriores de StandSpace.
 - Persistencia versionada de Spaces, Temporizador resistente a suspensión, carga de fotos con downsampling y actualización de Música basada en eventos con respaldo de baja frecuencia para mejorar fiabilidad y eficiencia.
 - El CI valida el manifiesto de privacidad, ejecuta pruebas deterministas de cuadrícula/packing y compila el target iOS en cada push/PR.
+
+## Contacto y feedback
+
+Las dudas, sugerencias, reportes de errores y feedback general pueden enviarse desde **Ajustes → Soporte** dentro de StandSpace o directamente mediante [GitHub Issues](https://github.com/tiburonns/StandSpace/issues). StandSpace prepara el reporte y abre GitHub para que el usuario pueda revisarlo antes de publicarlo.
+
+No incluyas contraseñas, información privada ni otros datos sensibles. Las vulnerabilidades de seguridad deben reportarse mediante el flujo privado **Security → Report a vulnerability** de GitHub.
 
 ## Lo siguiente
 
