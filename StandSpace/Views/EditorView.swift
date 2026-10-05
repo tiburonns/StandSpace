@@ -96,6 +96,13 @@ struct EditorView: View {
                     .onMove(perform: store.move)
                 }
 
+                Section(t("Support & feedback", "Soporte y feedback")) {
+                    Link(
+                        t("Questions, suggestions, bugs & feedback", "Dudas, sugerencias, errores y feedback"),
+                        destination: URL(string: "https://github.com/tiburonns/StandSpace/issues/new?template=feedback.yml")!
+                    )
+                }
+
                 Section("StandSpace") {
                     LabeledContent(
                         t("Version", "Versión"),
