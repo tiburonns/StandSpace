@@ -23,10 +23,10 @@ jobs:
           zip -qry StandSpace.ipa Payload
       - name: Publish GitHub Release
         env:
-          GH_TOKEN: ${${ github.token }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           VERSION=$(xcodebuild -project StandSpace.xcodeproj -target StandSpace -configuration Release -sdk iphoneos -showBuildSettings | awk -F' = ' '/MARKETING_VERSION/{print $2; exit}')
           BUILD=$(xcodebuild -project StandSpace.xcodeproj -target StandSpace -configuration Release -sdk iphoneos -showBuildSettings | awk -F' = ' '/CURRENT_PROJECT_VERSION/{print $2; exit}')
-          TAG="altstore-$VERSION-$BUILD-${${ github.run_number }}"
-          gh release create "$TAG" "$RUNNER_TEMP/StandSpace.ipa" --target "${${ github.sha }}" --title "StandSpace $VERSION ($BUILD)" --generate-notes
+          TAG="altstore-$VERSION-$BUILD-$GITHUB_RUN_NUMBER"
+          gh release create "$TAG" "$RUNNER_TEMP/StandSpace.ipa" --target "$GITHUB_SHA" --title "StandSpace $VERSION ($BUILD)" --generate-notes
