@@ -70,9 +70,13 @@ See CHANGELOG.md for the current release notes. The real-device release gate is 
 5. Verify the bundle identifier com.tiburonns.StandSpace or change it for your signing account.
 6. Build and run on an iPhone or iPad.
 
+To report a bug, comment, or suggestion, open Settings in the layout editor. StandSpace opens an addressed email draft for review; send it from your email app.
+
 ---
 
 # StandSpace — Español
+
+En el editor de espacios, abre **Ajustes** y completa **Errores, comentarios y sugerencias**. StandSpace abrirá un borrador dirigido al desarrollador; revísalo y envíalo desde tu app de correo.
 
 **Tu espacio. Tu información.**
 
