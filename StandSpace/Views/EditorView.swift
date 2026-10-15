@@ -3,6 +3,9 @@ import SwiftUI
 struct EditorView: View {
     @EnvironmentObject private var store: DashboardStore
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.openURL) private var openURL
+    @State private var feedbackCategory = "Suggestion"
+    @State private var feedbackMessage = ""
     @AppStorage(StandSpaceAppLanguage.storageKey)
     private var languageRawValue = StandSpaceAppLanguage.system.rawValue
 
@@ -106,6 +109,22 @@ struct EditorView: View {
                         .foregroundStyle(.secondary)
                 }
 
+                Section(t("Bugs, comments & suggestions", "Errores, comentarios y sugerencias")) {
+                    Picker(t("Category", "Categoría"), selection: $feedbackCategory) {
+                        Text(t("Bug", "Error")).tag("Bug")
+                        Text(t("Comment", "Comentario")).tag("Comment")
+                        Text(t("Suggestion", "Sugerencia")).tag("Suggestion")
+                        Text(t("Other", "Otro")).tag("Other")
+                    }
+                    TextField(t("Message", "Mensaje"), text: $feedbackMessage, axis: .vertical)
+                        .lineLimit(4...8)
+                    Button(t("Continue in email", "Continuar en correo"), action: sendFeedback)
+                        .disabled(feedbackMessage.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    Text(t("Your email app opens a draft. Review and send it there.", "Tu app de correo abre un borrador. Revísalo y envíalo desde allí."))
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+
                 Section {
                     Button(t("Reset all Spaces", "Restablecer todos los Spaces"), role: .destructive) {
                         store.reset()
@@ -131,6 +150,17 @@ struct EditorView: View {
 
     private func t(_ english: String, _ spanish: String) -> String {
         appLanguage.text(english: english, spanish: spanish)
+    }
+
+    private func sendFeedback() {
+        var components = URLComponents()
+        components.scheme = "mailto"
+        components.path = "tiburonns@icloud.com"
+        components.queryItems = [
+            URLQueryItem(name: "subject", value: "[StandSpace] [\(feedbackCategory)]"),
+            URLQueryItem(name: "body", value: "\(feedbackMessage)\n\nStandSpace \(appVersion)")
+        ]
+        if let url = components.url { openURL(url) }
     }
 
     private var appVersion: String {
