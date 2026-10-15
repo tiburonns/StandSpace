@@ -155,7 +155,7 @@ struct EditorView: View {
     private func sendFeedback() {
         var components = URLComponents()
         components.scheme = "mailto"
-        components.path = "adrianbarcenasm37@gmail.com"
+        components.path = "tiburonns@icloud.com"
         components.queryItems = [
             URLQueryItem(name: "subject", value: "[StandSpace] [\(feedbackCategory)]"),
             URLQueryItem(name: "body", value: "\(feedbackMessage)\n\nStandSpace \(appVersion)")
